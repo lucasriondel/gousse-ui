@@ -1,0 +1,15 @@
+/* Design tokens (--gousse-* + color-scheme) then Tailwind utilities compiled for
+   the primitives and their stories. Mirrors web's main.tsx order: tokens before
+   utilities so the vars are defined ahead of every consumer. */
+@import "../src/tokens.css";
+@import "../src/effects.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gousse-bg text-gousse-ink font-sans antialiased;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
