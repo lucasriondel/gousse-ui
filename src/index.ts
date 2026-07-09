@@ -29,3 +29,12 @@ export {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "./dropdown-menu";
+export {
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarItem,
+  SidebarFooter,
+} from "./sidebar";
