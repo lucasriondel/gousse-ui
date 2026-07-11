@@ -27,10 +27,10 @@ const POPUP_ANIM =
   "motion-reduce:transition-none motion-reduce:data-[starting-style]:scale-100";
 
 const POPUP_SURFACE =
-  "z-[70] min-w-[10rem] max-w-[min(15rem,calc(100vw-2rem))] rounded-2xl border border-gousse-line bg-gousse-panel p-2 shadow-gousse-xl outline-none";
+  "z-[70] min-w-[10rem] max-w-[min(15rem,calc(100vw-2rem))] rounded-2xl border border-gousse-line bg-gousse-panel p-2 shadow-gousse-xl outline-hidden";
 
 const ITEM_BASE =
-  "flex w-full cursor-default select-none items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm font-medium text-gousse-ink outline-none transition-[background,transform] duration-150 active:scale-[0.98] " +
+  "flex w-full cursor-default select-none items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm font-medium text-gousse-ink outline-hidden transition-[background,transform] duration-150 active:scale-[0.98] " +
   "data-[highlighted]:bg-gousse-line/40 hover:bg-gousse-line/40 data-[disabled]:pointer-events-none data-[disabled]:cursor-progress data-[disabled]:opacity-60";
 
 export function DropdownMenuContent({

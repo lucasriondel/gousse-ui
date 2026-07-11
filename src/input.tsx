@@ -4,7 +4,7 @@ import { cn } from "./utils";
 
 /**
  * Text input with the app's standard field chrome ({@link FIELD_CHROME}),
- * folding the recurring `focus:border-gousse-ink focus:outline-none` focus
+ * folding the recurring `focus:border-gousse-ink focus:outline-hidden` focus
  * treatment shared by the reply/compose fields. `className` extends or
  * overrides via cn().
  *

@@ -75,7 +75,7 @@ export function SidebarGroupLabel({ className, ...props }: ComponentProps<"div">
 }
 
 const item = cva(
-  "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm font-medium outline-none transition-[background,transform] duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gousse-ink/30 group-data-[collapsed]/sidebar:justify-center group-data-[collapsed]/sidebar:px-0",
+  "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm font-medium outline-hidden transition-[background,transform] duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gousse-ink/30 group-data-[collapsed]/sidebar:justify-center group-data-[collapsed]/sidebar:px-0",
   {
     variants: {
       active: {
