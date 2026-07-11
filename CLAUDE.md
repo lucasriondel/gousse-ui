@@ -58,3 +58,17 @@ Components reference tokens **only** through preset utilities (`text-gousse-ink`
 - Only `dist/` is shipped (`files`). Stories are excluded from the build (`tsconfig.json` `exclude`).
 - Publishing needs a **classic** PAT with `write:packages` in `NODE_AUTH_TOKEN` (fine-grained tokens don't work for GitHub Packages npm). `.npmrc` is token-less by design — token comes from the env. `prepublishOnly` runs the build. See README for the full flow.
 - `react`/`react-dom` are **peer deps** (`^19`), not bundled.
+
+## Agent skills
+
+### Issue tracker
+
+Issues tracked in this repo's GitHub Issues via the `gh` CLI; external PRs are not a triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles use their default label strings (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
