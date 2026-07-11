@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`@lucasriondel/gousse-ui` — the Gousse design-system primitives (React 19 + Tailwind 3). Headless-styled components (Button, Input, Badge, Select, DropdownMenu, …), design tokens, and a Tailwind preset. Published **privately** to GitHub Packages. This repo was extracted from a monorepo; comments still reference the old `packages/web` and `packages/ui` homes.
+`@lucasriondel/gousse-ui` — the Gousse design-system primitives (React 19 + Tailwind v4). Headless-styled components (Button, Input, Badge, Select, DropdownMenu, …), design tokens, and a CSS-first Tailwind theme (`theme.css`). Published **privately** to GitHub Packages. This repo was extracted from a monorepo; comments still reference the old `packages/web` and `packages/ui` homes.
 
 ## Commands
 
@@ -36,25 +36,30 @@ The shadcn CLI (`npx shadcn@latest add <name>`) does **not** fit this repo — i
 
 1. **Get the source.** Read it on the docs site (<https://ui.shadcn.com/docs/components/<name>>), or fetch the raw JSON from the registry: `https://ui.shadcn.com/r/styles/default/<name>.json` (the `files[].content` field holds the component source). Reference: <https://ui.shadcn.com/docs/cli> and <https://ui.shadcn.com/docs/installation/manual>.
 2. **Add missing deps** if the component needs them (`bun add <dep>`). Base UI (`@base-ui-components/react`) is already here and is the preferred headless base; shadcn's newer registry uses it too. Icons come from `lucide-react`.
-3. **Retheme onto gousse tokens.** Replace shadcn's default palette classes (`bg-background`, `text-foreground`, `border-input`, `text-muted-foreground`, `bg-accent`, `rounded-lg`, `ring-ring`, …) with the gousse equivalents (`bg-gousse-panel`, `text-gousse-ink`, `border-gousse-line`, `text-gousse-muted`, `bg-gousse-line/40`, `rounded-xl`, `focus-visible:ring-gousse-ink/30`, …). Never leave a raw color or a non-token class.
-4. **Match repo conventions**: one component (family) per `src/<name>.tsx` file, `cn()` merging `className` last, `cva` for variants, native semantics where possible (see `sidebar.tsx` for a hand-ported example, `dropdown-menu.tsx` for a Base UI wrapper).
-5. **Wire it up**: export from `src/index.ts` (the barrel), and add a `src/<name>.stories.tsx` with an `AllVariants`/states story so it renders in Storybook.
-6. `bun run typecheck` — the gate.
+3. **Retheme onto gousse tokens.** Replace shadcn's default palette classes (`bg-background`, `text-foreground`, `border-input`, `text-muted-foreground`, `bg-accent`, `rounded-lg`, `ring-ring`, …) with the gousse equivalents (`bg-gousse-panel`, `text-gousse-ink`, `border-gousse-line`, `text-gousse-muted`, `bg-gousse-line/40`, `rounded-xl`, `focus-visible:ring-gousse-ink/30`, …). Under Tailwind v4 the slash-opacity modifier works natively — no `<alpha-value>` shims. Never leave a raw color or a non-token class.
+4. **Watch for v4 utility renames.** The default palette classes in the shadcn source are the shadcn theme — they get rethemed as above. But if the source uses core Tailwind utilities that were renamed in v4 (e.g. v3 `shadow-sm` is v4 `shadow-xs`, v3 `outline-none` is v4 `outline-hidden` when the intent is the two-color-mode-safe focus outline), keep the v4 name.
+5. **Match repo conventions**: one component (family) per `src/<name>.tsx` file, `cn()` merging `className` last, `cva` for variants, native semantics where possible (see `sidebar.tsx` for a hand-ported example, `dropdown-menu.tsx` for a Base UI wrapper).
+6. **Wire it up**: export from `src/index.ts` (the barrel), and add a `src/<name>.stories.tsx` with an `AllVariants`/states story so it renders in Storybook.
+7. `bun run typecheck` — the gate.
 
-### The token / theme contract (three coordinated pieces)
+### The token / theme contract (three coordinated CSS sheets)
 
-1. `src/tokens.css` — CSS custom properties (`--gousse-bg`, `--gousse-ink`, shadows, …) defined on `:root` and `.dark`. Dark mode is **class-based** (`darkMode: "class"`). This file is intentionally *unlayered* (imported standalone, ahead of `@tailwind base`).
-2. `src/preset.ts` (`goussePreset`) — a **partial** Tailwind preset mapping those vars to utilities (`bg-gousse-panel`, `shadow-gousse-xl`, animations/keyframes). It deliberately omits `content`/`darkMode`/`plugins` — the **consumer** provides those.
-3. `src/effects.css` — keyframes for `RainbowGlow`/`Sheen`.
+Tailwind v4 CSS-first. There is **no JS preset and no `tailwind.config.ts`** — the theme is declared in CSS via `@theme`. Three sheets ship, all imported (in order) by consumers alongside a single `@import "tailwindcss"`:
 
-Components reference tokens **only** through preset utilities (`text-gousse-ink`, `bg-gousse-panel`). Never hardcode colors. If you add a token, edit both `tokens.css` (both `:root` and `.dark`) and `preset.ts`.
+1. `src/tokens.css` — raw RGB **channel** custom properties (`--gousse-bg: 249 247 244;`, `--gousse-ink`, `--gousse-shadow-*`, …) defined on `:root` and `.dark`, plus the `html { color-scheme }` block. This is the runtime knob — consumers override `--gousse-*` at any scope to rebrand. Dark mode is **class-based** and expressed in `theme.css` via `@custom-variant dark (&:where(.dark, .dark *))`. The sheet is intentionally *unlayered* so the vars are defined ahead of every consumer.
+2. `src/theme.css` — Tailwind v4 `@theme` block that maps `--gousse-*` channel vars onto Tailwind theme variables (`--color-gousse-ink: rgb(var(--gousse-ink))`, `--shadow-gousse-xl: var(--gousse-shadow-xl)`, `--animate-fade-in: fadeIn 300ms ease-out forwards`, …) so every `bg-gousse-*` / `shadow-gousse-*` / `animate-*` utility resolves. v4's native slash-opacity handles `bg-gousse-ink/90` without the v3 `<alpha-value>` placeholder.
+3. `src/effects.css` — plain hand-authored keyframes for `RainbowGlow`/`Sheen`. Independent of the Tailwind theme; kept unlayered.
 
-`tailwind.config.ts` at the root is **Storybook-only** — it spreads `goussePreset` so primitives render in isolation. The library ships no compiled component CSS; only `tokens.css`/`effects.css` are shipped.
+Components reference tokens **only** through theme utilities (`text-gousse-ink`, `bg-gousse-panel`, `shadow-gousse-md`, `animate-fade-in`). Never hardcode colors. If you add a token, edit **both** `tokens.css` (both `:root` and `.dark` blocks) and `theme.css` (the `@theme` mapping).
+
+The Storybook harness at `.storybook/preview.css` shows the canonical consumer wiring: `@import "tailwindcss"; @import "…/tokens.css"; @import "…/theme.css"; @import "…/effects.css";` and the Tailwind v4 Vite plugin (`@tailwindcss/vite`) registered in `main.ts`'s `viteFinal`. There is no `content` glob — v4 auto-detects source files.
+
+The library ships no compiled component CSS; only `tokens.css` / `theme.css` / `effects.css` are shipped.
 
 ## Build & publish specifics
 
-- `tsc` emits JS + `.d.ts` to `dist/` but **does not emit `.css`** — the `copy-css` script copies `tokens.css`/`effects.css` in. Both run via `build`.
-- `package.json` `exports` map: `.` (barrel), `./utils`, `./preset`, `./tokens.css`, `./effects.css`. **Update `exports` when adding a new public entry point.**
+- `tsc` emits JS + `.d.ts` to `dist/` but **does not emit `.css`** — the `copy-css` script copies `tokens.css`, `theme.css`, and `effects.css` in. Both run via `build`.
+- `package.json` `exports` map: `.` (barrel), `./utils`, `./tokens.css`, `./theme.css`, `./effects.css`. The v3-era `./preset` entry point was **removed** in v0.3.0 when the JS preset was replaced by the CSS-first `theme.css`. **Update `exports` when adding a new public entry point.**
 - Only `dist/` is shipped (`files`). Stories are excluded from the build (`tsconfig.json` `exclude`).
 - Publishing needs a **classic** PAT with `write:packages` in `NODE_AUTH_TOKEN` (fine-grained tokens don't work for GitHub Packages npm). `.npmrc` is token-less by design — token comes from the env. `prepublishOnly` runs the build. See README for the full flow.
 - `react`/`react-dom` are **peer deps** (`^19`), not bundled.

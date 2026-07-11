@@ -1,6 +1,6 @@
 {
   "name": "@lucasriondel/gousse-ui",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "Gousse design-system primitives (React 19 + Tailwind) — buttons, inputs, badges, tokens.",
   "license": "UNLICENSED",

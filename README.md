@@ -1,6 +1,6 @@
 # @lucasriondel/gousse-ui
 
-Gousse design-system primitives (React 19 + Tailwind 3). Published **privately** to
+Gousse design-system primitives (React 19 + Tailwind v4). Published **privately** to
 [GitHub Packages](https://docs.github.com/en/packages).
 
 ## Installing (consumers)
@@ -41,26 +41,49 @@ Bun reads `.npmrc` and interpolates `${NODE_AUTH_TOKEN}` from the environment.
 
 ## Usage
 
+Requires Tailwind CSS **v4** (`tailwindcss@^4.3`). The kit ships a CSS-first theme
+(`theme.css`) that consumers `@import` next to Tailwind — there is no JS preset and
+no `tailwind.config.ts` any more.
+
+Import the components you need from the barrel:
+
 ```ts
 import { Button, Badge, Spinner } from "@lucasriondel/gousse-ui";
-import { goussePreset } from "@lucasriondel/gousse-ui/preset"; // tailwind preset
-import "@lucasriondel/gousse-ui/tokens.css";  // CSS custom properties
-import "@lucasriondel/gousse-ui/effects.css"; // rainbow-glow / sheen keyframes
 ```
 
-Tailwind config:
+Wire the theme in your app's entry stylesheet (order matters — tokens define the
+`--gousse-*` channel vars, `theme.css` maps them onto Tailwind theme variables):
 
-```ts
-import { goussePreset } from "@lucasriondel/gousse-ui/preset";
-
-export default {
-  content: ["./src/**/*.{ts,tsx}"],
-  presets: [goussePreset],
-  darkMode: "class",
-};
+```css
+@import "tailwindcss";
+@import "@lucasriondel/gousse-ui/tokens.css";  /* --gousse-* channel vars (:root/.dark) */
+@import "@lucasriondel/gousse-ui/theme.css";   /* @theme mapping → bg-gousse-*, shadow-gousse-*, animate-* */
+@import "@lucasriondel/gousse-ui/effects.css"; /* rainbow-glow / sheen keyframes */
 ```
 
-`react` / `react-dom` are peer deps (`^19`) — the consumer provides them.
+Dark mode is **class-based** (`.dark` on `<html>`) and expressed by `theme.css`'s
+`@custom-variant dark`; flip `<html class="dark">` from your own toggle. `react` /
+`react-dom` are peer deps (`^19`) — the consumer provides them.
+
+## Changelog
+
+### 0.3.0 — Tailwind v4 CSS-first theme (breaking)
+
+Migrated the kit to Tailwind v4 and replaced the JS preset with a CSS-first theme
+sheet. **This is a breaking change for the theming entry point.**
+
+- **Removed** the `@lucasriondel/gousse-ui/preset` public entry point and the
+  `goussePreset` JS export. Under Tailwind v4 there is no `presets: [...]` config
+  to spread into.
+- **Added** `@lucasriondel/gousse-ui/theme.css`. Consumers replace
+  `presets: [goussePreset]` with `@import "@lucasriondel/gousse-ui/theme.css"` in
+  their entry stylesheet (see **Usage** above).
+- Requires `tailwindcss@^4.3`. If you were on Tailwind v3, upgrade first
+  (<https://tailwindcss.com/docs/upgrade-guide>).
+- The `--gousse-*` runtime tokens, class-based `.dark` mode, and every
+  `bg-gousse-*` / `shadow-gousse-*` / `animate-*` utility are preserved.
+  Component visuals are unchanged.
+- `react` / `react-dom` remain `^19` peer dependencies.
 
 ## Publishing (maintainer)
 
