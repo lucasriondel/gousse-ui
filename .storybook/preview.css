@@ -1,12 +1,12 @@
-/* Design tokens (--gousse-* + color-scheme) then Tailwind utilities compiled for
-   the primitives and their stories. Mirrors web's main.tsx order: tokens before
-   utilities so the vars are defined ahead of every consumer. */
+/* Storybook entry stylesheet. Tailwind v4 CSS-first: one `@import "tailwindcss"`
+   sets up the engine, then tokens/theme/effects layer on top. Order matters —
+   tokens.css defines the raw `--gousse-*` channel vars ahead of theme.css, which
+   maps them into Tailwind v4 theme variables so `bg-gousse-*`, `shadow-gousse-*`,
+   and `animate-*` utilities resolve for every primitive. */
+@import "tailwindcss";
 @import "../src/tokens.css";
+@import "../src/theme.css";
 @import "../src/effects.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 body {
   @apply bg-gousse-bg text-gousse-ink font-sans antialiased;
