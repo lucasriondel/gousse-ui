@@ -5,12 +5,23 @@ import { cn } from "./utils";
 /**
  * The app's styled button. cva variants replace the old plain variant record;
  * looks are ported verbatim from web's Button brick — shared chassis
- * (inline-flex, rounded-md, active:scale-[0.96] press) plus per-variant color
- * and per-variant disabled treatment (primary greys its bg + not-allowed;
- * the rest fade opacity). Local `className` still merges last via cn().
+ * (inline-flex, rounded-md, active:scale-[0.96] press, focus-visible accent
+ * ring) plus per-variant color and per-variant disabled treatment (primary
+ * greys its bg + not-allowed; the rest fade opacity). Local `className` still
+ * merges last via cn().
+ *
+ * Two variant groups:
+ * - `variant` — color. Defaults to `secondary`.
+ * - `size`    — chassis geometry. Defaults to `default`, which is the historic
+ *               `px-3 py-1.5` padding, so the scale is purely additive. `md`
+ *               is the 40px hit-area floor, `sm` the compact toolbar row, and
+ *               `icon` a square button whose hit area matches its height.
+ *
+ * The focus ring lives here rather than in each consumer: `active:scale` alone
+ * left keyboard focus invisible, which is an a11y gap a primitive should own.
  */
 const button = cva(
-  "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-[transform,colors] active:scale-[0.96]",
+  "inline-flex items-center gap-2 rounded-md text-sm font-medium transition-[transform,colors] active:scale-[0.96] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gousse-accent focus-visible:ring-offset-1 focus-visible:ring-offset-gousse-bg",
   {
     variants: {
       variant: {
@@ -23,8 +34,16 @@ const button = cva(
         danger:
           "bg-gousse-high text-white hover:bg-gousse-high/85 disabled:opacity-50 disabled:cursor-not-allowed",
       },
+      size: {
+        default: "px-3 py-1.5",
+        md: "h-10 px-4",
+        sm: "h-8 px-3 text-xs",
+        /* justify-center only here: the other sizes shrink-to-fit, so centring
+           them would silently re-align existing `w-full` call-sites. */
+        icon: "size-9 justify-center px-0",
+      },
     },
-    defaultVariants: { variant: "secondary" },
+    defaultVariants: { variant: "secondary", size: "default" },
   },
 );
 
@@ -34,8 +53,8 @@ interface Props
   children: ReactNode;
 }
 
-export const Button = ({ variant, className, children, ...rest }: Props) => (
-  <button {...rest} className={cn(button({ variant }), className)}>
+export const Button = ({ variant, size, className, children, ...rest }: Props) => (
+  <button {...rest} className={cn(button({ variant, size }), className)}>
     {children}
   </button>
 );

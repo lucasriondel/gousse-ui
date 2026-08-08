@@ -67,6 +67,20 @@ Dark mode is **class-based** (`.dark` on `<html>`) and expressed by `theme.css`'
 
 ## Changelog
 
+### 0.5.0 — Button size scale, Empty icon/action slots (additive)
+
+- **`Button` gained a `size` variant**: `default` (today's `px-3 py-1.5`, still the
+  default — existing call-sites are untouched), `md` (`h-10 px-4`, the 40px
+  hit-area floor), `sm` (`h-8 px-3 text-xs`, toolbar rows), `icon` (`size-9 px-0`,
+  square so the hit area matches the height).
+- **`Button` now has a focus ring**: `focus-visible:ring-2 ring-gousse-accent` with
+  a 1px `ring-offset-gousse-bg` offset. Keyboard focus was previously invisible —
+  the press feedback (`active:scale`) was the only affordance.
+- **`Empty` gained an `icon` slot**, rendered in flow above the title, and accepts
+  **`children` as an alias for `action`** (an explicit `action` wins if both are
+  passed), so `<Empty title="…"><Link/></Empty>` works without a wrapper.
+- `Button`'s `variant` still defaults to `secondary`; nothing else changed.
+
 ### 0.3.0 — Tailwind v4 CSS-first theme (breaking)
 
 Migrated the kit to Tailwind v4 and replaced the JS preset with a CSS-first theme

@@ -25,16 +25,37 @@ const empty = cva(
 interface Props extends VariantProps<typeof empty> {
   title: string;
   description?: ReactNode;
+  /** Rendered in flow above the title — typically a lucide icon. */
+  icon?: ReactNode;
   action?: ReactNode;
+  /** Alias for {@link Props.action}; `action` wins if both are given. */
+  children?: ReactNode;
   className?: string;
 }
 
-export const Empty = ({ title, description, action, variant, className }: Props) => (
-  <div className={cn(empty({ variant }), className)}>
-    <p className="text-lg font-bold text-gousse-ink">{title}</p>
-    {description ? (
-      <p className="mt-2 max-w-md text-sm font-medium text-gousse-muted">{description}</p>
-    ) : null}
-    {action ? <div className="mt-6">{action}</div> : null}
-  </div>
-);
+export const Empty = ({
+  title,
+  description,
+  icon,
+  action,
+  children,
+  variant,
+  className,
+}: Props) => {
+  // `children` is an alias so the common `<Empty>…<Link/></Empty>` shape works
+  // without a wrapper; an explicit `action` takes precedence.
+  const actionNode = action ?? children;
+
+  return (
+    <div className={cn(empty({ variant }), className)}>
+      {icon ? (
+        <div className="mb-4 flex items-center justify-center text-gousse-muted">{icon}</div>
+      ) : null}
+      <p className="text-lg font-bold text-gousse-ink">{title}</p>
+      {description ? (
+        <p className="mt-2 max-w-md text-sm font-medium text-gousse-muted">{description}</p>
+      ) : null}
+      {actionNode ? <div className="mt-6">{actionNode}</div> : null}
+    </div>
+  );
+};
