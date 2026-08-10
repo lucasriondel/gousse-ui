@@ -5,12 +5,18 @@ import { cn } from "./utils.js";
 /**
  * The app's styled button. cva variants replace the old plain variant record;
  * looks are ported verbatim from web's Button brick — shared chassis
- * (inline-flex, rounded-md, active:scale-[0.96] press) plus per-variant color
+ * (inline-flex, rounded-full, active:scale-[0.96] press) plus per-variant color
  * and per-variant disabled treatment (primary greys its bg + not-allowed;
  * the rest fade opacity). Local `className` still merges last via cn().
+ *
+ * The chassis is a **pill**. gousse leans round: a control that could be
+ * `rounded-md` or `rounded-full` takes the rounder option, and a pill sits
+ * correctly inside any parent radius because it has no corner to disagree with.
+ * The inset is `px-4` rather than the `px-3` a square button carried — a pill
+ * eats its own horizontal padding at the ends, so rounding means widening.
  */
 const button = cva(
-  "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-[transform,colors] active:scale-[0.96]",
+  "inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-[transform,colors] active:scale-[0.96]",
   {
     variants: {
       variant: {

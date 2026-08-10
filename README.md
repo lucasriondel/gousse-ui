@@ -64,14 +64,40 @@ that `theme.css` maps onto Tailwind theme variables:
 @import "tailwindcss";
 @import "./styles/gousse/tokens.css";  /* --gousse-* channel vars (:root/.dark) */
 @import "./styles/gousse/theme.css";   /* @theme mapping → bg-gousse-*, shadow-gousse-*, animate-* */
-@import "./styles/gousse/effects.css"; /* only if you use RainbowGlow / Sheen */
+@import "./styles/gousse/effects.css"; /* RainbowGlow / Sheen — and Select */
 ```
+
+`effects.css` is not optional if you use `Select`: a native `<select>` is
+painted by the OS, which ignores `border-radius`, so the sheet's
+`.gousse-select` reset is what lets the control take its shape at all. Skip the
+import and selects render with square OS corners and a doubled arrow.
 
 Dark mode is class-based: `theme.css` declares
 `@custom-variant dark (&:where(.dark, .dark *))`, so flip `<html class="dark">`
 from your own toggle. Rebrand by overriding `--gousse-*` at any scope — the
 components read tokens only through theme utilities (`text-gousse-ink`,
 `bg-gousse-panel`, `shadow-gousse-md`), never a hardcoded color.
+
+## Shape: the kit is round
+
+Controls are **pills**. Button, Input, Select, RadioGroupItem and SidebarItem
+are all `rounded-full`; where a shape is in doubt, gousse takes the rounder
+option. A pill also sidesteps concentric-radius arithmetic — it has no corner to
+disagree with its parent's, so it sits correctly inside a card of any radius.
+
+Two consequences worth knowing before you restyle anything:
+
+- **Round means wide.** A pill eats its own horizontal padding at the ends, so
+  insets are larger than a square control's (`px-4` on Button and the text
+  fields, not `px-3`/`px-2`). Narrow or numeric fields want `text-center` on top
+  — an off-centre value inside a pill reads as broken.
+- **Not everything is a pill.** `Textarea` takes `rounded-2xl`: a tall
+  multi-line box with fully-round ends loses its first and last lines to the
+  corner arc. Radius therefore lives *outside* the shared `FIELD_CHROME` string
+  (as `FIELD_PILL` / `FIELD_BOX`) so single- and multi-line fields can share
+  chrome without sharing shape.
+
+Every radius is a class on a component you now own — override it in place.
 
 ## Registry items
 

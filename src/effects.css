@@ -1,7 +1,8 @@
-/* gousse-ui — motion effects that Tailwind can't express cleanly (rotating
-   conic gradients, sheen keyframes). Shipped as a standalone sheet so consumers
-   opt in with `import "gousse-ui/effects.css"`. The React wrappers
-   (RainbowGlow, Sheen) attach these classes; you can also apply them directly.
+/* gousse-ui — the effects Tailwind can't express cleanly: rotating conic
+   gradients, sheen keyframes, and the native-select appearance reset. Shipped
+   as a standalone sheet so consumers opt in with `import "gousse-ui/effects.css"`.
+   The React wrappers (RainbowGlow, Sheen, Select) attach these classes; you can
+   also apply them directly.
 
    Classes are namespaced `gousse-*` and drive off the accent tokens where they
    tint, so they track the active theme like the rest of the kit. */
@@ -118,4 +119,30 @@
   .group:hover .gousse-sheen {
     animation: none;
   }
+}
+
+/* ============================================================
+   SELECT — the native-appearance reset behind Select's pill.
+   A native <select> is painted by the OS, which ignores
+   `border-radius` entirely, so `rounded-full` does nothing until
+   `appearance: none` drops that painting. Dropping it also
+   removes the built-in arrow, hence the inline-SVG chevron
+   below. A `url()` can't reference `currentColor`, so the glyph
+   is drawn in the muted token's literal rgb and the two themes
+   swap the whole image.
+
+   This owns the horizontal padding rather than leaving it to
+   FIELD_CHROME: the right inset has to clear the chevron, so the
+   two sides are asymmetric.
+   ============================================================ */
+.gousse-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-inline: 0.875rem 2rem;
+}
+
+.dark .gousse-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }

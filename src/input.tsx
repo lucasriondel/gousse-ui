@@ -1,12 +1,16 @@
 import type { ComponentProps } from "react";
-import { FIELD_CHROME } from "./field-chrome.js";
+import { FIELD_CHROME, FIELD_PILL } from "./field-chrome.js";
 import { cn } from "./utils.js";
 
 /**
  * Text input with the app's standard field chrome ({@link FIELD_CHROME}),
  * folding the recurring `focus:border-gousse-ink focus:outline-hidden` focus
- * treatment shared by the reply/compose fields. `className` extends or
- * overrides via cn().
+ * treatment shared by the reply/compose fields. Shaped as a pill
+ * ({@link FIELD_PILL}) — the kit's round control language. `className` extends
+ * or overrides via cn().
+ *
+ * Narrow or numeric inputs should add `text-center`: an off-centre value inside
+ * a pill reads as broken.
  *
  * NOTE: fields with genuinely different chrome (ModelPicker's no-focus mono
  * input, SyncRangeControls' tighter date inputs) stay raw <input> — routing
@@ -14,5 +18,5 @@ import { cn } from "./utils.js";
  * contract forbids.
  */
 export function Input({ className, ...props }: ComponentProps<"input">) {
-  return <input className={cn(FIELD_CHROME, className)} {...props} />;
+  return <input className={cn(FIELD_CHROME, FIELD_PILL, className)} {...props} />;
 }

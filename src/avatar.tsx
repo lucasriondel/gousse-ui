@@ -21,7 +21,7 @@ function initialsFor(email: string, chars: 1 | 2): string {
  */
 export const Avatar = ({ email, avatarUrl, chars = 2, className = "h-[34px] w-[34px]" }: Props) => (
   <span
-    className={`inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-gousse-accent to-orange-700 text-[11px] font-bold tracking-wide text-white shadow-[0_2px_6px_rgb(var(--gousse-accent)/0.35)] ${className}`}
+    className={`inline-flex flex-none items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-gousse-accent to-orange-700 text-[11px] font-bold tracking-wide text-white ${className}`}
   >
     {avatarUrl ? (
       <img

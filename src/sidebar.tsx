@@ -75,7 +75,7 @@ export function SidebarGroupLabel({ className, ...props }: ComponentProps<"div">
 }
 
 const item = cva(
-  "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm font-medium outline-hidden transition-[background,transform] duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gousse-ink/30 group-data-[collapsed]/sidebar:justify-center group-data-[collapsed]/sidebar:px-0",
+  "flex w-full items-center gap-2.5 rounded-full px-3.5 py-2 text-left text-sm font-medium outline-hidden transition-[background,transform] duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gousse-ink/30 group-data-[collapsed]/sidebar:justify-center group-data-[collapsed]/sidebar:px-0",
   {
     variants: {
       active: {
@@ -97,6 +97,11 @@ type SidebarItemProps = VariantProps<typeof item> & {
  * A nav row. Renders an `<a>`; pass `href`. Sets `aria-current="page"` when
  * `active`. In a collapsed Sidebar the label text is hidden via the parent's
  * `data-collapsed` marker, leaving the icon.
+ *
+ * Rows are pills. That is the point of the shape rather than a flourish: a
+ * `rounded-full` hover/active fill reads as a pill *sitting in* the sidebar,
+ * where a `rounded-xl` one reads as a block *filling* it. The inset widens to
+ * `px-3.5` so the label clears the corner arc.
  */
 export function SidebarItem({
   active,
