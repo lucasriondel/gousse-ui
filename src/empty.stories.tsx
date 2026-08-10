@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Empty } from "./empty";
-import { Button } from "./button";
+import { Empty } from "./empty.js";
+import { Button } from "./button.js";
 
 const meta = {
   title: "Primitives/Empty",

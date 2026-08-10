@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
-import { cn } from "./utils";
+import { cn } from "./utils.js";
 
 /**
  * Accessible radio group built on native inputs (not Base UI) to preserve the

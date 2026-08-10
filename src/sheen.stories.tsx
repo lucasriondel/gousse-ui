@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Sheen } from "./sheen";
+import { Sheen } from "./sheen.js";
 
 const meta = {
   title: "Effects/Sheen",

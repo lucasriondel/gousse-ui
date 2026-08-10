@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import { Separator as BaseSeparator } from "@base-ui-components/react/separator";
-import { cn } from "./utils";
+import { cn } from "./utils.js";
 
 /**
  * Thin rule that consolidates the app's hand-rolled `h-px bg-gousse-line`

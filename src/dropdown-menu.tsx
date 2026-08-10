@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 import { Menu } from "@base-ui-components/react/menu";
 import { ChevronRight } from "lucide-react";
-import { cn } from "./utils";
+import { cn } from "./utils.js";
 
 /**
  * shadcn-flavoured wrappers over Base UI's `Menu` primitives, restyled with

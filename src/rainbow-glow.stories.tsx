@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { RainbowGlow } from "./rainbow-glow";
+import { RainbowGlow } from "./rainbow-glow.js";
 
 const meta = {
   title: "Effects/RainbowGlow",

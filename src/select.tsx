@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { cn } from "./utils";
+import { cn } from "./utils.js";
 
 /**
  * Thin styled wrapper over a native <select> — keeps OS picker semantics and

@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
-import { FIELD_CHROME } from "./field-chrome";
-import { cn } from "./utils";
+import { FIELD_CHROME } from "./field-chrome.js";
+import { cn } from "./utils.js";
 
 /**
  * Multi-line text field sharing {@link Input}'s chrome via {@link FIELD_CHROME}

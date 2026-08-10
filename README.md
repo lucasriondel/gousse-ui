@@ -67,6 +67,19 @@ Dark mode is **class-based** (`.dark` on `<html>`) and expressed by `theme.css`'
 
 ## Changelog
 
+### 0.4.1 — `dist` is valid Node ESM
+
+`dist` ships as `"type": "module"` but emitted extensionless relative specifiers
+(`from "./utils"`), which Node's ESM resolver rejects. Importing the package off
+the bundler path (plain `node`, Vitest, SSR) failed with `ERR_MODULE_NOT_FOUND`.
+
+- Every relative import in `src/` now carries an explicit `.js` extension, so
+  `tsc` emits fully-resolvable specifiers. No API or visual change.
+- `moduleResolution` is now `NodeNext`, so `bun run typecheck` fails on a
+  reintroduced extensionless import.
+- Consumers who inlined the package to work around this (e.g. Vitest
+  `server.deps.inline`) can drop that workaround.
+
 ### 0.3.0 — Tailwind v4 CSS-first theme (breaking)
 
 Migrated the kit to Tailwind v4 and replaced the JS preset with a CSS-first theme
