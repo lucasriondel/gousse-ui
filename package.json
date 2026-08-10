@@ -1,9 +1,10 @@
 {
   "name": "@lucasriondel/gousse-ui",
   "version": "0.4.1",
+  "private": true,
   "type": "module",
-  "description": "Gousse design-system primitives (React 19 + Tailwind) — buttons, inputs, badges, tokens.",
-  "license": "UNLICENSED",
+  "description": "Gousse design-system primitives (React 19 + Tailwind v4) — distributed as a shadcn registry.",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lucasriondel/gousse-ui.git"
@@ -23,20 +24,16 @@
     "./theme.css": "./dist/theme.css",
     "./effects.css": "./dist/effects.css"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
-  },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc && bun run copy-css",
     "copy-css": "cp src/tokens.css src/theme.css src/effects.css dist/",
-    "prepublishOnly": "bun run build",
+    "build-registry": "bun scripts/build-registry.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
     "test": "bun test",
     "lint": "echo 'no lint configured'",
     "sandcastle": "bun .sandcastle/main.ts"

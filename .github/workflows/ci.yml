@@ -15,6 +15,7 @@ jobs:
           bun-version: latest
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
-      # Packaging smoke check — `dist` must stay loadable by Node's ESM
-      # resolver. Builds dist itself; a bundler-only matrix never catches this.
+      # Registry generation gates, plus the packaging smoke check — `dist` must
+      # stay loadable by Node's ESM resolver. Builds dist itself; a bundler-only
+      # matrix never catches this.
       - run: bun run test
