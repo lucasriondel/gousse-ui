@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "./utils";
+import { cn } from "./utils.js";
 
 /**
  * Centered empty-state panel. Folds web's EmptyState (dashed border) and

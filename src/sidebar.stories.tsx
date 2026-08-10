@@ -8,7 +8,7 @@ import {
   SidebarGroupLabel,
   SidebarItem,
   SidebarFooter,
-} from "./sidebar";
+} from "./sidebar.js";
 
 const meta = {
   title: "Primitives/Sidebar",

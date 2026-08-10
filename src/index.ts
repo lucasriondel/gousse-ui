@@ -2,21 +2,21 @@
  * gousse-ui barrel — re-exports every primitive plus `cn`.
  * Primitives are added here as each migration commit lands.
  */
-export { cn } from "./utils";
-export { Spinner } from "./spinner";
-export { Separator } from "./separator";
-export { Badge, badgeClasses, type BadgeVariant } from "./badge";
-export { Avatar } from "./avatar";
-export { Empty } from "./empty";
-export { RainbowGlow } from "./rainbow-glow";
-export { Sheen } from "./sheen";
-export { Button } from "./button";
-export { Input } from "./input";
-export { Textarea } from "./textarea";
-export { Select } from "./select";
-export { Checkbox } from "./checkbox";
-export { RadioGroup, RadioGroupItem } from "./radio-group";
-export { Switch } from "./switch";
+export { cn } from "./utils.js";
+export { Spinner } from "./spinner.js";
+export { Separator } from "./separator.js";
+export { Badge, badgeClasses, type BadgeVariant } from "./badge.js";
+export { Avatar } from "./avatar.js";
+export { Empty } from "./empty.js";
+export { RainbowGlow } from "./rainbow-glow.js";
+export { Sheen } from "./sheen.js";
+export { Button } from "./button.js";
+export { Input } from "./input.js";
+export { Textarea } from "./textarea.js";
+export { Select } from "./select.js";
+export { Checkbox } from "./checkbox.js";
+export { RadioGroup, RadioGroupItem } from "./radio-group.js";
+export { Switch } from "./switch.js";
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -28,7 +28,7 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-} from "./dropdown-menu";
+} from "./dropdown-menu.js";
 export {
   Sidebar,
   SidebarHeader,
@@ -37,4 +37,4 @@ export {
   SidebarGroupLabel,
   SidebarItem,
   SidebarFooter,
-} from "./sidebar";
+} from "./sidebar.js";

@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
-import { FIELD_CHROME } from "./field-chrome";
-import { cn } from "./utils";
+import { FIELD_CHROME } from "./field-chrome.js";
+import { cn } from "./utils.js";
 
 /**
  * Text input with the app's standard field chrome ({@link FIELD_CHROME}),

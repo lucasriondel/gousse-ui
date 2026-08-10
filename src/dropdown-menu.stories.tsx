@@ -10,8 +10,8 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
-} from "./dropdown-menu";
-import { Button } from "./button";
+} from "./dropdown-menu.js";
+import { Button } from "./button.js";
 
 const meta = {
   title: "Primitives/DropdownMenu",

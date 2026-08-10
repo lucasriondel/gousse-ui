@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { cn } from "./utils";
+import { cn } from "./utils.js";
 
 /**
  * Styled native checkbox — folds the app's standard checkbox chrome

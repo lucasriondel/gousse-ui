@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "./utils";
+import { cn } from "./utils.js";
 
 /**
  * The app's styled button. cva variants replace the old plain variant record;

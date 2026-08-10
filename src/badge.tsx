@@ -1,6 +1,6 @@
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "./utils";
+import { cn } from "./utils.js";
 
 /**
  * The shared pill chassis for gousse's family of badges (label, system, suggested,
