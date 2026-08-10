@@ -28,10 +28,15 @@ const ITEM_TYPES = [
   "registry:item",
 ] as const;
 
-/** `registry:font` is item-only — a file can never carry it. */
-const FILE_TYPES = ITEM_TYPES.filter((t) => t !== "registry:font") as unknown as [
-  string,
-  ...string[],
+/** `registry:font` is item-only — a file can never carry it. Spelled out rather
+ *  than filtered so the literal union survives: routing through `unknown` would
+ *  widen `RegistryItemFile["type"]` to `string` and stop the compiler catching a
+ *  mistyped `type:` at every `files.push` in the generator. */
+const FILE_TYPES = ITEM_TYPES.filter(
+  (t): t is Exclude<(typeof ITEM_TYPES)[number], "registry:font"> => t !== "registry:font",
+) as [
+  Exclude<(typeof ITEM_TYPES)[number], "registry:font">,
+  ...Exclude<(typeof ITEM_TYPES)[number], "registry:font">[],
 ];
 
 export const registryItemTypeSchema = z.enum(ITEM_TYPES);

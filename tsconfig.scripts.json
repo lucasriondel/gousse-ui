@@ -7,6 +7,6 @@
     "rootDir": ".",
     "types": ["bun"]
   },
-  "include": ["scripts/**/*"],
+  "include": ["scripts/**/*", "src/**/*.stories.tsx", "test/**/*", ".storybook/**/*"],
   "exclude": []
 }

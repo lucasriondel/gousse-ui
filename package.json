@@ -28,15 +28,18 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && bun run copy-css",
+    "build": "rm -rf dist && tsc && bun run copy-css",
     "copy-css": "cp src/tokens.css src/theme.css src/effects.css dist/",
+    "prepack": "bun run build",
     "build-registry": "bun scripts/build-registry.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
     "test": "bun test",
     "lint": "echo 'no lint configured'",
-    "sandcastle": "bun .sandcastle/main.ts"
+    "sandcastle": "bun .sandcastle/main.ts",
+    "sandcastle:implement": "bun .sandcastle/implement/index.ts",
+    "sandcastle:implement-review": "bun .sandcastle/implement-review/index.ts"
   },
   "dependencies": {
     "@base-ui-components/react": "1.0.0-rc.0",

@@ -344,6 +344,98 @@ describe("extractImports", () => {
   });
 });
 
+describe("source parsing is literal-aware", () => {
+  test("a `//` inside a string is not a comment", () => {
+    // The gates only see what the parser sees: eating the rest of the line here
+    // would hide a real import from both of them and ship a broken item.
+    expect(extractImports(`const p = "a//b"; import { z } from "react";`)).toContain("react");
+    expect(extractImports(`const cdn = "//cdn.x.com";\nimport { cn } from "./utils.js";`)).toContain(
+      "./utils.js",
+    );
+  });
+
+  test("only import specifiers are aliased, not identical strings elsewhere", () => {
+    const { items: generated } = buildRegistry({
+      baseUrl: BASE_URL,
+      extraSources: {
+        "alias-probe.tsx": [
+          `/** @example import { cn } from "./utils.js" */`,
+          `import { cn } from "./utils.js";`,
+          `const assetPath = "./utils.js";`,
+          `export const C = () => cn(assetPath);`,
+        ].join("\n"),
+      },
+    });
+    const content = generated.find((i) => i.name === "alias-probe")!.files![0]!.content!;
+    expect(content).toContain(`import { cn } from "@/lib/utils"`);
+    expect(content).toContain(`@example import { cn } from "./utils.js"`);
+    expect(content).toContain(`const assetPath = "./utils.js"`);
+  });
+});
+
+describe("stylesheet inference is precise", () => {
+  const depsOf = (extraSources: Record<string, string>, name: string) => {
+    const { items: generated } = buildRegistry({ baseUrl: BASE_URL, extraSources });
+    return (generated.find((i) => i.name === name)!.registryDependencies ?? []).map(
+      itemNameFromUrl,
+    );
+  };
+
+  test("a `dark:` variant is not a use of the `.dark` rule tokens.css defines", () => {
+    expect(
+      depsOf({ "dark-probe.tsx": `export const P = () => <div className="dark:bg-black" />;` }, "dark-probe"),
+    ).not.toContain("tokens");
+  });
+
+  test("a variant name that matches a class is not a use of it", () => {
+    expect(
+      depsOf({ "type-probe.tsx": `type T = "dark";\nexport const P = (t: T) => <b>{t}</b>;` }, "type-probe"),
+    ).toEqual([]);
+  });
+
+  test("an attribute namespace is not a utility prefix", () => {
+    expect(
+      depsOf({ "attr-probe.tsx": `export const P = () => <div className="data-gousse-ink" />;` }, "attr-probe"),
+    ).not.toContain("theme");
+  });
+
+  test("a raw `var(--gousse-*)` pulls the sheet that defines it", () => {
+    // `bg-[rgb(var(--gousse-panel))]` reaches a token without naming a utility;
+    // without tokens.css installed it resolves to nothing in the consumer's app.
+    expect(
+      depsOf(
+        { "var-probe.tsx": `export const P = () => <div className="bg-[rgb(var(--gousse-panel))]" />;` },
+        "var-probe",
+      ),
+    ).toContain("tokens");
+  });
+
+  test("a var the runtime supplies is not required of a shipped sheet", () => {
+    // Base UI sets `--transform-origin` on its popups; no gousse sheet owns it.
+    expect(() =>
+      buildRegistry({
+        baseUrl: BASE_URL,
+        extraSources: {
+          "runtime-var.tsx": `export const P = () => <div className="origin-[var(--transform-origin)]" />;`,
+        },
+      }),
+    ).not.toThrow();
+  });
+});
+
+describe("item names are unique", () => {
+  test("two files claiming one name fail the build rather than shadowing", () => {
+    // `effects.tsx` and `effects.css` would fight over the `effects` item, and
+    // the loser's dependencies would vanish with no error anywhere.
+    expect(() =>
+      buildRegistry({
+        baseUrl: BASE_URL,
+        extraSources: { "effects.tsx": `export const E = () => <span className="gousse-sheen" />;` },
+      }),
+    ).toThrow(/both claim the item name "effects"/);
+  });
+});
+
 describe("npmPackageName", () => {
   test("resolves subpath imports back to their package", () => {
     expect(npmPackageName("@base-ui-components/react/menu")).toBe("@base-ui-components/react");

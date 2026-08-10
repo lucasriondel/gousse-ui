@@ -51,24 +51,155 @@ const NPM_VERSIONS: Record<string, string> = pkg.dependencies;
 // source parsing
 // ---------------------------------------------------------------------------
 
-/** Drop comments so a `from "…"` inside prose is not mistaken for an import. */
+/**
+ * Drop comments so a `from "…"` inside prose is not mistaken for an import.
+ *
+ * Scanned rather than regexed: a `//` inside a string literal (`"//cdn.x/a"`)
+ * or a regex literal is not a comment, and treating it as one would delete the
+ * rest of the line — hiding real imports and class strings from both gates.
+ *
+ * Comment bodies blank out to spaces rather than vanishing, keeping the result
+ * the same length as the input (newlines survive too). `rewriteImports` maps
+ * match offsets straight back onto the original source, so that must hold.
+ */
 function stripComments(source: string): string {
-  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+  let out = "";
+  let i = 0;
+
+  /** True when the previous token allows a regex literal rather than division. */
+  const regexAllowedHere = (): boolean => {
+    const before = out.replace(/\s+$/, "");
+    if (!before) return true;
+    const last = before[before.length - 1]!;
+    if ("([{,;:=!&|?+-*%~^<>".includes(last)) return true;
+    return /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case|yield|await)$/.test(
+      before,
+    );
+  };
+
+  while (i < source.length) {
+    const ch = source[i]!;
+    const next = source[i + 1];
+
+    if (ch === "/" && next === "*") {
+      const end = source.indexOf("*/", i + 2);
+      const body = end === -1 ? source.slice(i) : source.slice(i, end + 2);
+      out += body.replace(/[^\n]/g, " "); // blank the prose, keep the newlines
+      i = end === -1 ? source.length : end + 2;
+      continue;
+    }
+
+    if (ch === "/" && next === "/") {
+      const end = source.indexOf("\n", i);
+      const body = end === -1 ? source.slice(i) : source.slice(i, end);
+      out += " ".repeat(body.length);
+      i = end === -1 ? source.length : end;
+      continue;
+    }
+
+    if (ch === '"' || ch === "'" || ch === "`") {
+      out += ch;
+      i += 1;
+      while (i < source.length) {
+        const c = source[i]!;
+        out += c;
+        i += 1;
+        if (c === "\\") {
+          if (i < source.length) {
+            out += source[i]!;
+            i += 1;
+          }
+          continue;
+        }
+        if (c === ch) break;
+      }
+      continue;
+    }
+
+    if (ch === "/" && regexAllowedHere()) {
+      // A regex literal: consume it whole so a `//`-looking body (or a `"` in a
+      // character class) cannot desynchronise the scan.
+      let j = i + 1;
+      let inClass = false;
+      let closed = false;
+      while (j < source.length) {
+        const c = source[j]!;
+        if (c === "\\") {
+          j += 2;
+          continue;
+        }
+        if (c === "\n") break; // unterminated — not a regex after all
+        if (c === "[") inClass = true;
+        else if (c === "]") inClass = false;
+        else if (c === "/" && !inClass) {
+          closed = true;
+          j += 1;
+          break;
+        }
+        j += 1;
+      }
+      if (closed) {
+        out += source.slice(i, j);
+        i = j;
+        continue;
+      }
+    }
+
+    out += ch;
+    i += 1;
+  }
+
+  return out;
 }
+
+/** The three shapes a module specifier appears in. Each captures the quoted
+ *  specifier in group 1, so one pass can both read and rewrite them. */
+const IMPORT_PATTERNS = [
+  /\bfrom\s*["']([^"']+)["']/g,
+  /\bimport\s+["']([^"']+)["']/g,
+  /\bimport\s*\(\s*["']([^"']+)["']/g,
+];
 
 /** Every module specifier a file pulls in: static, side-effect, and dynamic. */
 export function extractImports(source: string): string[] {
   const code = stripComments(source);
   const specs: string[] = [];
-  const patterns = [
-    /\bfrom\s*["']([^"']+)["']/g,
-    /\bimport\s+["']([^"']+)["']/g,
-    /\bimport\s*\(\s*["']([^"']+)["']/g,
-  ];
-  for (const re of patterns) {
+  for (const re of IMPORT_PATTERNS) {
     for (const m of code.matchAll(re)) specs.push(m[1]!);
   }
   return [...new Set(specs)];
+}
+
+/**
+ * Rewrite module specifiers in place, leaving every other occurrence of the
+ * same string alone: a `"./utils.js"` in a JSDoc `@example` or a runtime path
+ * is not an import and must survive verbatim into the consumer's tree.
+ *
+ * Matching runs against the comment-stripped source so prose can never be
+ * rewritten, but the offsets index the original — `stripComments` preserves
+ * length for everything except comment bodies, which are never import sites.
+ */
+export function rewriteImports(source: string, rename: (spec: string) => string | null): string {
+  const code = stripComments(source);
+  const edits: Array<{ start: number; end: number; text: string }> = [];
+
+  for (const re of IMPORT_PATTERNS) {
+    for (const m of code.matchAll(re)) {
+      const replacement = rename(m[1]!);
+      if (replacement === null) continue;
+      // Offset of the specifier itself, not of the whole `from "…"` match.
+      const quoteOffset = m[0]!.indexOf(m[1]!);
+      const start = m.index! + quoteOffset;
+      edits.push({ start, end: start + m[1]!.length, text: replacement });
+    }
+  }
+
+  edits.sort((a, b) => b.start - a.start); // right-to-left keeps earlier offsets valid
+  let out = source;
+  for (const edit of edits) {
+    out = out.slice(0, edit.start) + edit.text + out.slice(edit.end);
+  }
+  return out;
 }
 
 /** `@base-ui-components/react/menu` -> `@base-ui-components/react`, and any
@@ -120,11 +251,46 @@ function titleCase(name: string): string {
     .join(" ");
 }
 
-/** Match a Tailwind theme value / CSS class inside a class string, where the
- *  left neighbour is usually a utility prefix (`bg-`, `shadow-`). */
-function usesToken(source: string, token: string): boolean {
+/**
+ * The class strings a component actually renders with. Stylesheet inference
+ * reads this rather than the whole module: an identifier, a union member, or
+ * JSX text that happens to equal a class name (`type T = "dark"`) is not a use
+ * of that class, and treating it as one drags an unwanted sheet along.
+ *
+ * Deliberately loose about *which* strings — every string literal reachable
+ * from a `className`/`class`/`cva`/`cn` position, plus template literals, since
+ * variant maps and extracted chrome constants are all just strings.
+ */
+export function extractClassStrings(source: string): string {
+  // A `type X = "dark" | "light"` alias names variants, it does not apply a
+  // class — so it must not read as a use of the `.dark` rule tokens.css owns.
+  // Only the alias form is stripped: a `key: "…"` inside a cva variants map has
+  // the same shape as a property signature and carries real class strings.
+  const code = stripComments(source).replace(/\btype\s+\w+\s*=[^;]*;/g, "");
+
+  const pieces: string[] = [];
+  for (const m of code.matchAll(/"([^"\n]*)"|'([^'\n]*)'|`([^`]*)`/g)) {
+    pieces.push(m[1] ?? m[2] ?? m[3] ?? "");
+  }
+  return pieces.join("\n");
+}
+
+/**
+ * Match a Tailwind theme value / CSS class inside a class string.
+ *
+ * The left boundary stays asymmetric on purpose: a `-` before the token is the
+ * normal case, because that is the utility prefix (`bg-gousse-ink`,
+ * `shadow-gousse-xl`). Only the HTML attribute namespaces get excluded, since
+ * `data-gousse-ink` and `aria-*` are names of their own rather than utilities.
+ *
+ * The right boundary excludes `:` on top of the word characters, so Tailwind's
+ * `dark:bg-black` variant does not read as a use of the `.dark` class that
+ * tokens.css happens to define.
+ */
+function usesClass(source: string, token: string): boolean {
   const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`(?<![A-Za-z0-9_])${escaped}(?![A-Za-z0-9_-])`).test(source);
+  const notAttribute = String.raw`(?<!\bdata-)(?<!\baria-)`;
+  return new RegExp(`(?<![A-Za-z0-9_])${notAttribute}${escaped}(?![A-Za-z0-9_:-])`).test(source);
 }
 
 /** Comments in these sheets name classes and vars they don't actually define
@@ -159,6 +325,22 @@ function cssCustomProperties(css: string): { defined: Set<string>; referenced: S
   const defined = new Set([...rules.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]!));
   const referenced = new Set([...rules.matchAll(/var\(\s*(--[\w-]+)/g)].map((m) => m[1]!));
   return { defined, referenced };
+}
+
+/** Per-sheet property sets, parsed once. Ownership lookups happen per
+ *  referenced var across every sheet, which re-parses the same text otherwise. */
+const sheetPropertyCache = new WeakMap<
+  SourceFile,
+  { defined: Set<string>; referenced: Set<string> }
+>();
+
+function sheetProperties(sheet: SourceFile): { defined: Set<string>; referenced: Set<string> } {
+  let parsed = sheetPropertyCache.get(sheet);
+  if (!parsed) {
+    parsed = cssCustomProperties(sheet.content);
+    sheetPropertyCache.set(sheet, parsed);
+  }
+  return parsed;
 }
 
 /** Tailwind theme values declared in `@theme` reduced to the fragment that
@@ -218,8 +400,21 @@ export function buildRegistry(options: BuildOptions = {}): {
 } {
   const baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
   const sources = readSources(options.extraSources);
-  const byName = new Map(sources.map((s) => [s.name, s]));
   const itemUrl = (name: string) => `${baseUrl}/r/${name}.json`;
+
+  // One file in `src/` is one item, named after the file — so two files that
+  // reduce to the same name (`effects.tsx` and `effects.css`) would fight over
+  // one registry entry, and the loser's dependencies would vanish silently.
+  const byName = new Map<string, SourceFile>();
+  for (const source of sources) {
+    const clash = byName.get(source.name);
+    if (clash) {
+      throw new Error(
+        `Registry generation failed:\n  - "${source.file}" and "${clash.file}" both claim the item name "${source.name}"`,
+      );
+    }
+    byName.set(source.name, source);
+  }
 
   const sheets = sources.filter((s) => s.kind === "css");
   const sheetClasses = new Map(sheets.map((s) => [s.name, cssSubjectClasses(s.content)]));
@@ -247,12 +442,12 @@ export function buildRegistry(options: BuildOptions = {}): {
       const { defined, referenced } = cssCustomProperties(source.content);
       for (const ref of referenced) {
         if (defined.has(ref)) continue;
-        const owner = sheets.find((s) => s.name !== source.name && cssCustomProperties(s.content).defined.has(ref));
+        const owner = sheets.find((s) => s !== source && sheetProperties(s).defined.has(ref));
         if (owner) registryDeps.add(owner.name);
         else problems.push(`${source.file}: \`var(${ref})\` is defined by no shipped stylesheet`);
       }
     } else {
-      let content = source.content;
+      const aliases = new Map<string, string>();
 
       for (const spec of extractImports(source.content)) {
         if (spec.startsWith(".")) {
@@ -271,7 +466,7 @@ export function buildRegistry(options: BuildOptions = {}): {
           }
           // Installed files land in the consumer's own tree, so siblings are
           // no longer siblings — hand the CLI an alias it can rewrite.
-          content = content.replaceAll(`"${spec}"`, `"${alias}"`).replaceAll(`'${spec}'`, `'${alias}'`);
+          aliases.set(spec, alias);
           registryDeps.add(sibling.name);
           continue;
         }
@@ -287,22 +482,41 @@ export function buildRegistry(options: BuildOptions = {}): {
       }
 
       // Stylesheets the source needs to render as designed. Read the class
-      // strings, not the prose — doc comments mention plenty they don't use.
-      const classStrings = stripComments(source.content);
+      // strings only — a `"dark"` variant prop or a `<span>dark</span>` is not
+      // a use of the `.dark` rule tokens.css happens to define.
+      const classStrings = extractClassStrings(source.content);
       for (const [sheet, classes] of sheetClasses) {
-        if (classes.some((cls) => usesToken(classStrings, cls))) registryDeps.add(sheet);
+        if (classes.some((cls) => usesClass(classStrings, cls))) registryDeps.add(sheet);
       }
-      if (themeSheet && themeValues.some((value) => usesToken(classStrings, value))) {
+      if (themeSheet && themeValues.some((value) => usesClass(classStrings, value))) {
         registryDeps.add("theme");
+      }
+
+      // A component can also reach a token directly, through an arbitrary value
+      // like `bg-[rgb(var(--gousse-panel))]`. The css branch enforces this for
+      // sheets; without the same check here such a component ships with no
+      // stylesheet at all and renders unstyled in the consumer's app.
+      //
+      // Scoped to `--gousse-*`: other custom properties are supplied at runtime
+      // by whoever renders the component (Base UI sets `--transform-origin` on
+      // its popups), and no shipped sheet can or should own them.
+      for (const ref of new Set(
+        [...classStrings.matchAll(/var\(\s*(--gousse-[\w-]+)/g)].map((m) => m[1]!),
+      )) {
+        const owner = sheets.find((s) => sheetProperties(s).defined.has(ref));
+        if (owner) registryDeps.add(owner.name);
+        else problems.push(`${source.file}: \`var(${ref})\` is defined by no shipped stylesheet`);
       }
 
       files.push({
         path: `src/${source.file}`,
-        content,
+        content: rewriteImports(source.content, (spec) => aliases.get(spec) ?? null),
         type: source.kind === "ui" ? "registry:ui" : "registry:lib",
       });
     }
 
+    // A sheet must not depend on itself. Item names are unique (enforced
+    // above), so a self-named dependency can only be this same source.
     registryDeps.delete(source.name);
 
     const description = describeModule(source.content);
