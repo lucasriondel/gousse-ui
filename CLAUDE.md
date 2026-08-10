@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`@lucasriondel/gousse-ui` — the Gousse design-system primitives (React 19 + Tailwind v4). Headless-styled components (Button, Input, Badge, Select, DropdownMenu, …), design tokens, and a CSS-first Tailwind theme (`theme.css`). Published **privately** to GitHub Packages. This repo was extracted from a monorepo; comments still reference the old `packages/web` and `packages/ui` homes.
+`gousse-ui` — the Gousse design-system primitives (React 19 + Tailwind v4). Headless-styled components (Button, Input, Badge, Select, DropdownMenu, …), design tokens, and a CSS-first Tailwind theme (`theme.css`). **Public (MIT), distributed as a shadcn registry** — consumers copy the source into their own tree; there is no published npm package. This repo was extracted from a monorepo; comments still reference the old `packages/web` and `packages/ui` homes.
 
 ## Commands
 
@@ -13,18 +13,20 @@ Uses **Bun** as the package manager.
 ```bash
 bun install              # install deps
 bun run storybook        # dev harness on :6006 — primary way to build/see components
-bun run typecheck        # tsc --noEmit — the real "test"; run before committing
-bun run build            # tsc -> dist/ + copy-css; run before publishing
+bun run typecheck        # tsc --noEmit over src/ + scripts/; run before committing
+bun run test             # bun test — the registry generation gates
+bun run build-registry   # emit registry-static/ (registry.json + r/*.json + landing page)
 bun run build-storybook  # static Storybook
+bun run build            # tsc -> dist/ + copy-css — legacy npm artifact, see below
 ```
 
-There is **no test runner and no linter** (`bun run lint` is a no-op echo). `typecheck` is the gate. There are no unit tests — components are validated visually in Storybook (`*.stories.tsx` next to each component).
+`typecheck` and `test` are the gates; there is **no linter** (`bun run lint` is a no-op echo). The only unit tests are `scripts/build-registry.test.ts` — components themselves are validated visually in Storybook (`*.stories.tsx` next to each component).
 
 **Stories are the coverage contract: every component must have stories covering every state.** One story per meaningful state — each variant, size, `disabled`/loading/active/error/empty state, and any collapsed/expanded or open/closed mode — plus an `AllVariants`-style story showing them side by side. Adding a variant or state without a story that exercises it is incomplete work. See `button.stories.tsx` (variant + disabled + `AllVariants`) and `sidebar.stories.tsx` (`Default` + `Collapsed`).
 
 ## Architecture
 
-- **Every primitive is one file in `src/`** with a co-located `*.stories.tsx`. `src/index.ts` is the barrel — **add each new component's export here** or consumers can't import it. Follow the existing "one component per file" convention.
+- **Every primitive is one file in `src/`** with a co-located `*.stories.tsx`. One file in `src/` == one registry item, named after the file — that's the whole publishing manifest, so the filename *is* the public name. Follow the existing "one component per file" convention. `src/index.ts` is the legacy npm barrel; keep it in sync while it exists, but it is not part of the registry payload.
 - **Styling is class-string based**, no CSS-in-JS. Components accept a `className` that always merges *last* via `cn()` (`src/utils.ts` — clsx + tailwind-merge, dedupes conflicts). Variants use **cva** (`class-variance-authority`); see `src/button.tsx` for the canonical pattern.
 - **Shared style strings are extracted to constants** so related components can't drift: `src/field-chrome.ts` (`FIELD_CHROME`, shared by Input/Textarea), and `POPUP_*`/`ITEM_*` consts inside `dropdown-menu.tsx`. Reuse these rather than re-typing chrome.
 - **Interactive/popover components wrap Base UI** (`@base-ui-components/react`) in shadcn-flavoured wrappers, restyled with gousse tokens (see `dropdown-menu.tsx`). Simple form controls wrap the **native** element (see `select.tsx`) to keep OS semantics.
@@ -32,15 +34,15 @@ There is **no test runner and no linter** (`bun run lint` is a no-op echo). `typ
 
 ### Adding a new component ported from shadcn/ui
 
-The shadcn CLI (`npx shadcn@latest add <name>`) does **not** fit this repo — it targets a `components/ui/` + `lib/utils` alias layout defined in a `components.json`, which we don't use. **Port manually** instead, adapting to gousse conventions:
+This repo *serves* a shadcn registry but does not *consume* one: the CLI (`npx shadcn@latest add <name>`) targets a `components/ui/` + `lib/utils` alias layout defined in a `components.json`, and we keep the flat `src/` layout instead. **Port manually**, adapting to gousse conventions:
 
 1. **Get the source.** Read it on the docs site (<https://ui.shadcn.com/docs/components/<name>>), or fetch the raw JSON from the registry: `https://ui.shadcn.com/r/styles/default/<name>.json` (the `files[].content` field holds the component source). Reference: <https://ui.shadcn.com/docs/cli> and <https://ui.shadcn.com/docs/installation/manual>.
 2. **Add missing deps** if the component needs them (`bun add <dep>`). Base UI (`@base-ui-components/react`) is already here and is the preferred headless base; shadcn's newer registry uses it too. Icons come from `lucide-react`.
 3. **Retheme onto gousse tokens.** Replace shadcn's default palette classes (`bg-background`, `text-foreground`, `border-input`, `text-muted-foreground`, `bg-accent`, `rounded-lg`, `ring-ring`, …) with the gousse equivalents (`bg-gousse-panel`, `text-gousse-ink`, `border-gousse-line`, `text-gousse-muted`, `bg-gousse-line/40`, `rounded-xl`, `focus-visible:ring-gousse-ink/30`, …). Under Tailwind v4 the slash-opacity modifier works natively — no `<alpha-value>` shims. Never leave a raw color or a non-token class.
 4. **Watch for v4 utility renames.** The default palette classes in the shadcn source are the shadcn theme — they get rethemed as above. But if the source uses core Tailwind utilities that were renamed in v4 (e.g. v3 `shadow-sm` is v4 `shadow-xs`, v3 `outline-none` is v4 `outline-hidden` when the intent is the two-color-mode-safe focus outline), keep the v4 name.
 5. **Match repo conventions**: one component (family) per `src/<name>.tsx` file, `cn()` merging `className` last, `cva` for variants, native semantics where possible (see `sidebar.tsx` for a hand-ported example, `dropdown-menu.tsx` for a Base UI wrapper).
-6. **Wire it up**: export from `src/index.ts` (the barrel), and add a `src/<name>.stories.tsx` with an `AllVariants`/states story so it renders in Storybook.
-7. `bun run typecheck` — the gate.
+6. **Wire it up**: export from `src/index.ts` (the barrel), and add a `src/<name>.stories.tsx` with an `AllVariants`/states story so it renders in Storybook. The registry picks the file up on its own — no manifest to edit.
+7. `bun run typecheck && bun run test` — the gates.
 
 ### The token / theme contract (three coordinated CSS sheets)
 
@@ -54,15 +56,18 @@ Components reference tokens **only** through theme utilities (`text-gousse-ink`,
 
 The Storybook harness at `.storybook/preview.css` shows the canonical consumer wiring: `@import "tailwindcss"; @import "…/tokens.css"; @import "…/theme.css"; @import "…/effects.css";` and the Tailwind v4 Vite plugin (`@tailwindcss/vite`) registered in `main.ts`'s `viteFinal`. There is no `content` glob — v4 auto-detects source files.
 
-The library ships no compiled component CSS; only `tokens.css` / `theme.css` / `effects.css` are shipped.
+The library ships no compiled component CSS; the three sheets are published as their own registry items (`tokens`, `theme`, `effects`).
 
-## Build & publish specifics
+## Distribution: the shadcn registry
 
-- `tsc` emits JS + `.d.ts` to `dist/` but **does not emit `.css`** — the `copy-css` script copies `tokens.css`, `theme.css`, and `effects.css` in. Both run via `build`.
-- `package.json` `exports` map: `.` (barrel), `./utils`, `./tokens.css`, `./theme.css`, `./effects.css`. The v3-era `./preset` entry point was **removed** in v0.3.0 when the JS preset was replaced by the CSS-first `theme.css`. **Update `exports` when adding a new public entry point.**
-- Only `dist/` is shipped (`files`). Stories are excluded from the build (`tsconfig.json` `exclude`).
-- Publishing needs a **classic** PAT with `write:packages` in `NODE_AUTH_TOKEN` (fine-grained tokens don't work for GitHub Packages npm). `.npmrc` is token-less by design — token comes from the env. `prepublishOnly` runs the build. See README for the full flow.
-- `react`/`react-dom` are **peer deps** (`^19`), not bundled.
+The repo is **public and MIT**. Components are distributed as a shadcn registry of static JSON on GitHub Pages (<https://lucasriondel.github.io/gousse-ui>) — consumers run `npx shadcn@latest add <url>` and the *source* is copied into their tree. No package, no version to track, no credential. Consequence worth remembering: **fixing a bug here does not fix it for anyone who already installed.**
+
+- **`scripts/build-registry.ts` generates everything from `src/`.** Item name = filename. `.tsx` → `registry:ui`, non-story `.ts` → `registry:lib` (`utils`, `field-chrome`), `.css` → `registry:file` with a `src/styles/gousse/` target. `index.ts` and `*.stories.tsx` are excluded. **There is no manifest to edit** — adding `src/foo.tsx` publishes `foo`.
+- **Dependencies are derived, never declared by hand.** npm deps come from the imports a file actually makes, versioned off `package.json` (`class-variance-authority@^0.7.1`); `react`/`react-dom` are peers and stay out. Relative imports become registry dependencies *and* get rewritten to shadcn aliases (`./utils` → `@/lib/utils`) so the CLI can place files per the consumer's `components.json`. Stylesheet deps are inferred from usage: a component using a `@theme` value gets `theme` (which pulls `tokens`), one using a class `effects.css` styles as a *subject* gets `effects`.
+- **Two build gates, both throwing:** every import in a shipped file must resolve to a declared npm dep, a declared registry dep, or a bundled file; and every document must validate against `scripts/registry-schema.ts` (a zod mirror of the upstream shadcn JSON Schema — re-check it against <https://ui.shadcn.com/schema/registry-item.json> if the CLI starts rejecting entries).
+- `bun run build-registry` writes `registry-static/` (gitignored). `.github/workflows/pages.yml` runs typecheck → test → registry → Storybook into `registry-static/storybook` → Pages deploy on push to `main`. `REGISTRY_BASE_URL` overrides the item URLs baked into `registryDependencies`.
+- **The npm package is retired.** `package.json` is `private` and nothing is published; the GitHub Packages `publishConfig` and `.npmrc` are gone. `dist/` (`build`, `copy-css`, `exports`, `files`) survives only until the last consumer of the published `0.4.0` migrates onto vendored source — treat it as legacy, not a public entry point.
+- `react`/`react-dom` are **peer deps** (`^19`), never installed by the registry.
 
 ## Agent skills
 

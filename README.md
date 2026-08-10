@@ -1,107 +1,146 @@
-# @lucasriondel/gousse-ui
+# gousse-ui
 
-Gousse design-system primitives (React 19 + Tailwind v4). Published **privately** to
-[GitHub Packages](https://docs.github.com/en/packages).
+A small set of React 19 + Tailwind v4 primitives — Button, Input, Badge, Select,
+DropdownMenu, Sidebar, and a dozen more — built on [Base UI](https://base-ui.com)
+and shipped as a **[shadcn registry](https://ui.shadcn.com/docs/registry)**.
 
-## Installing (consumers)
+There is no package to install. The shadcn CLI copies the component **source into
+your project**, where you own it: change a variant, add a size, retheme a token —
+it's your file. No registry credential, no authentication step, MIT licensed.
 
-GitHub Packages serves private packages only with an authenticated token, so every
-machine that installs this needs two things: a scope→registry map and a token.
+**Registry:** <https://lucasriondel.github.io/gousse-ui> ·
+**Storybook:** <https://lucasriondel.github.io/gousse-ui/storybook/>
 
-### 1. Create a GitHub token
-
-Classic Personal Access Token with the **`read:packages`** scope:
-<https://github.com/settings/tokens/new?scopes=read:packages>
-
-(Fine-grained tokens do **not** work for GitHub Packages npm reads — use a classic PAT.)
-
-### 2. Point the `@lucasriondel` scope at GitHub Packages
-
-Add an `.npmrc` in the consuming project (or `~/.npmrc` for all projects):
-
-```ini
-@lucasriondel:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-```
-
-Then export the token in your shell / CI env — never inline it in a committed file:
+## Install a component
 
 ```bash
-export NODE_AUTH_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+npx shadcn@latest add https://lucasriondel.github.io/gousse-ui/r/button.json
 ```
 
-### 3. Install
+Dependencies resolve themselves: `button` pulls in `utils` (the `cn` helper) and
+the `theme`/`tokens` stylesheets, and installs `class-variance-authority`. Take
+one component or all of them — nothing forces you to adopt the whole set.
+
+To shorten the command, register the namespace in your `components.json`:
+
+```json
+{
+  "registries": {
+    "@gousse": "https://lucasriondel.github.io/gousse-ui/r/{name}.json"
+  }
+}
+```
 
 ```bash
-bun add @lucasriondel/gousse-ui
-# or: npm i @lucasriondel/gousse-ui
+npx shadcn@latest add @gousse/button @gousse/sidebar
 ```
 
-Bun reads `.npmrc` and interpolates `${NODE_AUTH_TOKEN}` from the environment.
+Files land wherever your `components.json` aliases point — components at your
+`ui` alias, `utils`/`field-chrome` at your `lib` alias, stylesheets under
+`src/styles/gousse/`.
 
-## Usage
+## What you're taking on
 
-Requires Tailwind CSS **v4** (`tailwindcss@^4.3`). The kit ships a CSS-first theme
-(`theme.css`) that consumers `@import` next to Tailwind — there is no JS preset and
-no `tailwind.config.ts` any more.
+| | |
+|---|---|
+| React | `^19` (peer — yours, never installed by the registry) |
+| Tailwind | `v4` (`tailwindcss@^4.3`), CSS-first config — no `tailwind.config.ts` |
+| Primitives | `@base-ui-components/react@1.0.0-rc.0` — **a release candidate**, used by DropdownMenu and Separator |
+| Also pulled in | `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react` |
 
-Import the components you need from the barrel:
+The Base UI pin is a prerelease. That's a real adoption consideration, not a
+footnote — components that use it may need touching when Base UI hits 1.0.
+Everything else (Button, Input, Badge, Select, Checkbox, Switch, RadioGroup,
+Textarea, Sidebar, Empty, Avatar, Spinner, Sheen, RainbowGlow) wraps native
+elements or plain markup and doesn't depend on it.
 
-```ts
-import { Button, Badge, Spinner } from "@lucasriondel/gousse-ui";
-```
+## Wire up the theme
 
-Wire the theme in your app's entry stylesheet (order matters — tokens define the
-`--gousse-*` channel vars, `theme.css` maps them onto Tailwind theme variables):
+Installing any component brings the stylesheets along. Add them to your entry
+stylesheet — order matters, `tokens.css` defines the `--gousse-*` channel vars
+that `theme.css` maps onto Tailwind theme variables:
 
 ```css
 @import "tailwindcss";
-@import "@lucasriondel/gousse-ui/tokens.css";  /* --gousse-* channel vars (:root/.dark) */
-@import "@lucasriondel/gousse-ui/theme.css";   /* @theme mapping → bg-gousse-*, shadow-gousse-*, animate-* */
-@import "@lucasriondel/gousse-ui/effects.css"; /* rainbow-glow / sheen keyframes */
+@import "./styles/gousse/tokens.css";  /* --gousse-* channel vars (:root/.dark) */
+@import "./styles/gousse/theme.css";   /* @theme mapping → bg-gousse-*, shadow-gousse-*, animate-* */
+@import "./styles/gousse/effects.css"; /* only if you use RainbowGlow / Sheen */
 ```
 
-Dark mode is **class-based** (`.dark` on `<html>`) and expressed by `theme.css`'s
-`@custom-variant dark`; flip `<html class="dark">` from your own toggle. `react` /
-`react-dom` are peer deps (`^19`) — the consumer provides them.
+Dark mode is class-based: `theme.css` declares
+`@custom-variant dark (&:where(.dark, .dark *))`, so flip `<html class="dark">`
+from your own toggle. Rebrand by overriding `--gousse-*` at any scope — the
+components read tokens only through theme utilities (`text-gousse-ink`,
+`bg-gousse-panel`, `shadow-gousse-md`), never a hardcoded color.
 
-## Changelog
+## Registry items
 
-### 0.3.0 — Tailwind v4 CSS-first theme (breaking)
+| item | type | what it is |
+|---|---|---|
+| `avatar` `badge` `button` `checkbox` `dropdown-menu` `empty` `input` `radio-group` `rainbow-glow` `select` `separator` `sheen` `sidebar` `spinner` `switch` `textarea` | `registry:ui` | the components |
+| `utils` `field-chrome` | `registry:lib` | `cn()`, and the shared text-field chrome string |
+| `tokens` `theme` `effects` | `registry:file` | the three stylesheets |
 
-Migrated the kit to Tailwind v4 and replaced the JS preset with a CSS-first theme
-sheet. **This is a breaking change for the theming entry point.**
+Full index: [`registry.json`](https://lucasriondel.github.io/gousse-ui/registry.json).
 
-- **Removed** the `@lucasriondel/gousse-ui/preset` public entry point and the
-  `goussePreset` JS export. Under Tailwind v4 there is no `presets: [...]` config
-  to spread into.
-- **Added** `@lucasriondel/gousse-ui/theme.css`. Consumers replace
-  `presets: [goussePreset]` with `@import "@lucasriondel/gousse-ui/theme.css"` in
-  their entry stylesheet (see **Usage** above).
-- Requires `tailwindcss@^4.3`. If you were on Tailwind v3, upgrade first
-  (<https://tailwindcss.com/docs/upgrade-guide>).
-- The `--gousse-*` runtime tokens, class-based `.dark` mode, and every
-  `bg-gousse-*` / `shadow-gousse-*` / `animate-*` utility are preserved.
-  Component visuals are unchanged.
-- `react` / `react-dom` remain `^19` peer dependencies.
+## Development
 
-## Publishing (maintainer)
-
-Requires a classic PAT with **`write:packages`** (and `read:packages`).
+Uses [Bun](https://bun.sh).
 
 ```bash
-cd packages/ui
-export NODE_AUTH_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
-npm version patch          # bump 0.1.0 -> 0.1.1 (or minor/major)
-npm publish                # prepublishOnly runs the build (tsc + copy-css)
-# bun publish works too — exports already point at dist/ in package.json.
+bun install
+bun run storybook        # dev harness on :6006 — the way to build and see components
+bun run test             # registry generation tests
+bun run typecheck        # tsc --noEmit over src/ and scripts/
+bun run build-registry   # emit registry-static/ (registry.json + r/*.json + landing page)
 ```
 
-Notes:
-- `main`/`exports` point at `dist/` (compiled JS + `.d.ts`). In-repo, **web** consumes
-  ui *source* for hot-reload via a Vite alias in `packages/web/vite.config.ts`, and
-  `turbo typecheck` depends on `^build` so ui is built before web typechecks.
-- Only `dist/` is shipped (see `files`). CSS is copied into `dist/` by `copy-css`
-  because `tsc` alone does not emit `.css`.
-- The committed `.npmrc` is token-less: the token comes from `${NODE_AUTH_TOKEN}` in
-  the environment. Never inline a token into a committed file.
+Every component is one file in `src/` with a co-located `*.stories.tsx`; stories
+are the coverage contract. See [`CLAUDE.md`](./CLAUDE.md) for conventions.
+
+### How the registry is built
+
+`scripts/build-registry.ts` derives the whole registry from `src/`. Item names
+come from filenames, npm dependencies from the imports each file actually makes
+(versioned off `package.json`), registry dependencies from relative imports and
+from the design tokens / effect classes the source uses. Relative imports are
+rewritten to shadcn aliases (`./utils` → `@/lib/utils`) so the CLI can place
+files according to the consumer's own `components.json`.
+
+Nothing is hand-maintained — adding `src/foo.tsx` publishes `foo`. Two gates run
+before anything is written, and both fail the build rather than warn:
+
+1. every import in every shipped file resolves to a declared npm dependency, a
+   declared registry dependency, or a file bundled in the same item;
+2. every generated document validates against the shadcn registry schema
+   (`scripts/registry-schema.ts`, a zod mirror of the upstream JSON Schema).
+
+`bun test` runs both over the real component source.
+
+### Hosting
+
+A push to `main` runs [`.github/workflows/pages.yml`](.github/workflows/pages.yml):
+typecheck → test → build the registry → build Storybook into
+`registry-static/storybook` → deploy the whole directory to GitHub Pages. Static
+files, no service to keep running.
+
+## Distribution history
+
+Gousse UI was previously published as a private npm package to GitHub Packages
+(`@lucasriondel/gousse-ui`, last release `0.4.0`). GitHub Packages requires an
+authentication token for every install, which made the package unusable by anyone
+without a credential.
+
+**The registry is now the single distribution path.** The package is marked
+`private` and is no longer published anywhere. The `dist/` build and the
+`exports` map survive only until the last consumer of `0.4.0` migrates onto
+vendored source; they are not a supported entry point.
+
+Because the registry copies source at install time, you are not tracking a
+version, and fixes made here will not reach components you have already
+installed. That is the shadcn trade: ownership and editability instead of
+automatic updates.
+
+## License
+
+[MIT](./LICENSE) © Lucas Riondel

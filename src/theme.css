@@ -3,7 +3,7 @@
    tokens.css onto Tailwind v4 theme variables so that every `gousse-*` utility
    used by the primitives (color, shadow, animation) resolves the same way it
    did under the v3 `goussePreset`. Consumers `@import "tailwindcss"` first,
-   then `@import "@lucasriondel/gousse-ui/theme.css"`.
+   then tokens.css, then this sheet.
 
    Colors are declared as `rgb(var(--gousse-*))` — v4 handles slash-opacity via
    relative color-space arithmetic, so `bg-gousse-ink/90` and friends keep

@@ -22,7 +22,7 @@ interface RainbowGlowProps {
 /**
  * Rotating rainbow conic halo — the brand "this is AI" glow. Render it as the
  * first child of a `relative`/`isolate` host (a `.group` when `trigger="hover"`)
- * so it sits behind the host's content. Requires `import "@lucasriondel/gousse-ui/effects.css"`.
+ * so it sits behind the host's content. Requires the gousse `effects.css` sheet.
  *
  * @example
  * <button className="group relative isolate rounded-full">

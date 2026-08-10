@@ -1,0 +1,64 @@
+name: Publish registry
+
+# The registry is static JSON served from GitHub Pages: hosting costs nothing,
+# needs no credential to read, and cannot go down independently of the repo.
+# Storybook ships alongside it at /storybook so consumers can look before they
+# install.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      # Fails on an entry whose imports aren't fully declared, or one that
+      # doesn't validate against the shadcn schema — before it is served.
+      - name: Test
+        run: bun test
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      - name: Build registry
+        run: bun run build-registry
+        env:
+          REGISTRY_BASE_URL: ${{ steps.pages.outputs.base_url }}
+
+      - name: Build Storybook
+        run: bun run build-storybook --output-dir registry-static/storybook --quiet
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: registry-static
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
