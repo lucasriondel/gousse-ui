@@ -31,10 +31,17 @@ export {
 } from "./dropdown-menu.js";
 export {
   Sidebar,
+  SidebarShell,
   SidebarHeader,
   SidebarContent,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarItem,
+  SidebarGlyph,
   SidebarFooter,
+  SidebarTrigger,
+  SidebarClose,
+  SidebarCollapsible,
+  sidebarRowClass,
+  type SidebarItemRenderProps,
 } from "./sidebar.js";
