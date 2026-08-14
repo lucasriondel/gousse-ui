@@ -7,6 +7,10 @@
 @import "../src/tokens.css";
 @import "../src/theme.css";
 @import "../src/effects.css";
+/* Companion sheet to `sidebar.tsx` — without it the rows lay out but render
+   flat: no hue fill, no left active bar, no glyph tint. Imported after
+   theme.css, as a consumer installing the `sidebar` registry item would. */
+@import "../src/sidebar-chrome.css";
 
 body {
   @apply bg-gousse-bg text-gousse-ink font-sans antialiased;

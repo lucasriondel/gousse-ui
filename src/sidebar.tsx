@@ -16,7 +16,9 @@ import { cn } from "./utils.js";
  * The hue-driven row surfaces (hover fill, left active bar, glyph tint) live in
  * `sidebar-chrome.css` — a single per-row `--hue` custom property feeds rest, hover and
  * active uniformly, which Tailwind can't express cleanly. Install that sheet
- * alongside this file or rows render flat.
+ * alongside this file or rows render flat. The left bar reads `--bar-hue` and
+ * falls back to `--hue`, so `barHue` recolors it alone; `--bar-width` (2.5px by
+ * default) is the matching CSS-only knob for its thickness.
  */
 
 /* ------------------------------------------------------------------ shells */
@@ -320,6 +322,13 @@ type SidebarItemOwnProps = {
   depth?: number;
   /** Row accent as an `r g b` triplet; drives the row's `--hue`. */
   hue?: string;
+  /**
+   * The left active bar's color as an `r g b` triplet, when it should differ
+   * from the rest of the row. Defaults to `hue` (and so to the accent), which
+   * is what keeps the bar, the hover fill and the glyph tint reading as one
+   * color unless you deliberately split them.
+   */
+  barHue?: string;
   /** Tint the glyph with the hue at rest (used for category mailboxes). */
   tinted?: boolean;
   /** Collapsed state of the branch this row heads; rotates a `.sidebar-chevron`. */
@@ -365,6 +374,7 @@ export function SidebarItem({
   trailing,
   depth = 0,
   hue,
+  barHue,
   tinted,
   branchCollapsed,
   className,
@@ -375,6 +385,7 @@ export function SidebarItem({
 }: SidebarItemProps) {
   const rowStyle: CSSProperties = { ...style };
   if (hue) (rowStyle as Record<string, string>)["--hue"] = hue;
+  if (barHue) (rowStyle as Record<string, string>)["--bar-hue"] = barHue;
   // One step = the glyph slot + its gap, so a child's text sits directly under
   // its parent's text rather than drifting off on its own margin.
   if (depth > 0) rowStyle.paddingLeft = `${0.625 + depth * 1.625}rem`;

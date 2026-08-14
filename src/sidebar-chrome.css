@@ -14,9 +14,18 @@
    across rest/hover/active. `--hue` defaults to the accent;
    category rows override it inline. Tinted rows also carry their
    hue on the glyph at rest.
+
+   The bar reads `--bar-hue`, which falls back to `--hue` — so by
+   default the bar tracks the row's hue (and thus the accent), but
+   a consumer can recolor the bar alone, leaving the hover fill and
+   the glyph tint on the row hue.
    ------------------------------------------------------------ */
 .sidebar-row {
   --hue: var(--gousse-accent);
+  /* Bar knobs, declared here so they are discoverable and so a consumer can
+     override either one at any scope. `--bar-hue` tracks `--hue` unless set. */
+  --bar-hue: var(--hue);
+  --bar-width: 2.5px;
   position: relative;
 }
 .sidebar-row::before {
@@ -25,9 +34,9 @@
   left: 0;
   top: 50%;
   height: 0;
-  width: 2.5px;
+  width: var(--bar-width);
   border-radius: 9999px;
-  background: rgb(var(--hue));
+  background: rgb(var(--bar-hue));
   transform: translateY(-50%);
   transition: height 0.18s cubic-bezier(0.2, 0, 0, 1);
 }

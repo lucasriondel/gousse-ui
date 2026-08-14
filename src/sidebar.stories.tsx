@@ -175,7 +175,7 @@ const Body = ({ onToggle }: { onToggle?: () => void }) => {
 export const Default: Story = {
   args: { collapsed: false },
   render: ({ collapsed }) => (
-    <div className="flex h-[560px]">
+    <div className="flex h-screen">
       <Sidebar collapsed={collapsed}>
         <Body />
       </Sidebar>
@@ -191,7 +191,7 @@ export const Default: Story = {
 export const Collapsed: Story = {
   args: { collapsed: true },
   render: ({ collapsed }) => (
-    <div className="flex h-[560px]">
+    <div className="flex h-screen">
       <Sidebar collapsed={collapsed}>
         <Body />
       </Sidebar>
@@ -213,7 +213,7 @@ export const Responsive: Story = {
       const [collapsed, setCollapsed] = useState(initial ?? false);
       const toggle = () => setCollapsed((c) => !c);
       return (
-        <div className="flex h-[560px]">
+        <div className="flex h-screen">
           <SidebarShell collapsed={collapsed} onToggle={toggle}>
             <Body onToggle={toggle} />
           </SidebarShell>
@@ -236,7 +236,7 @@ export const Responsive: Story = {
 export const Title: Story = {
   args: { collapsed: false },
   render: () => (
-    <div className="flex h-[560px]">
+    <div className="flex h-screen">
       <Sidebar>
         <SidebarHeader>
           <SidebarTitle mark={<Mark />}>gousse</SidebarTitle>
@@ -254,7 +254,7 @@ export const Title: Story = {
 export const TitleWithoutMark: Story = {
   args: { collapsed: false },
   render: () => (
-    <div className="flex h-[560px]">
+    <div className="flex h-screen">
       <Sidebar>
         <SidebarHeader>
           <SidebarTitle>gousse</SidebarTitle>
@@ -273,7 +273,7 @@ export const TitleWithoutMark: Story = {
 export const TitleAsLink: Story = {
   args: { collapsed: false },
   render: () => (
-    <div className="flex h-[560px]">
+    <div className="flex h-screen">
       <Sidebar>
         <SidebarHeader>
           <SidebarTitle mark={<Mark />} render={(p) => <a href="#root" {...p} />}>
@@ -294,7 +294,7 @@ export const TitleAsLink: Story = {
 export const TitleAllVariants: Story = {
   args: { collapsed: false },
   render: () => (
-    <div className="flex h-[560px]">
+    <div className="flex h-screen">
       <Sidebar>
         <SidebarHeader className="flex-col items-stretch gap-3">
           <SidebarTitle mark={<Mark />}>With mark</SidebarTitle>
@@ -312,7 +312,7 @@ export const TitleAllVariants: Story = {
 export const AllVariants: Story = {
   args: { collapsed: false },
   render: () => (
-    <div className="flex h-[560px]">
+    <div className="flex h-screen">
       <Sidebar>
         <SidebarHeader>
           <Brand />
@@ -361,6 +361,30 @@ export const AllVariants: Story = {
             ))}
             <SidebarItem active hue={HUE.social} icon={<Tag aria-hidden className={ICON} />}>
               <span className="truncate">Active, hued</span>
+            </SidebarItem>
+          </SidebarGroup>
+
+          {/* `barHue` recolors the left bar alone — the hover fill and the glyph
+              tint stay on the row's `hue`. Absent, the bar tracks `hue`. */}
+          <SidebarGroup className="mt-3">
+            <SidebarGroupLabel>Bar hue</SidebarGroupLabel>
+            <SidebarItem active icon={<Tag aria-hidden className={ICON} />}>
+              <span className="truncate">Default (accent)</span>
+            </SidebarItem>
+            <SidebarItem
+              active
+              barHue={HUE.social}
+              icon={<Tag aria-hidden className={ICON} />}
+            >
+              <span className="truncate">Bar only</span>
+            </SidebarItem>
+            <SidebarItem
+              active
+              hue={HUE.promos}
+              barHue={HUE.updates}
+              icon={<Tag aria-hidden className={ICON} />}
+            >
+              <span className="truncate">Bar vs row hue</span>
             </SidebarItem>
           </SidebarGroup>
 
