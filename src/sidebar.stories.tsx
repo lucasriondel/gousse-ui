@@ -13,6 +13,7 @@ import {
   Sidebar,
   SidebarShell,
   SidebarHeader,
+  SidebarTitle,
   SidebarContent,
   SidebarGroup,
   SidebarGroupLabel,
@@ -43,14 +44,14 @@ const HUE = {
   updates: "168 85 247",
 } as const;
 
-const Brand = () => (
-  <span className="flex items-center gap-3 text-lg font-bold tracking-tight text-gousse-ink">
-    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-gousse-accent/15 text-sm text-gousse-accent">
-      g
-    </span>
-    gousse
+/** A stand-in logo mark — a consumer would drop an `<img>` in here instead. */
+const Mark = () => (
+  <span className="grid h-9 w-9 place-items-center rounded-md bg-gousse-accent/15 text-sm">
+    g
   </span>
 );
+
+const Brand = () => <SidebarTitle mark={<Mark />}>gousse</SidebarTitle>;
 
 const Count = ({ n }: { n: number }) => (
   <span className="sidebar-count ml-auto text-xs tabular-nums text-gousse-muted">{n}</span>
@@ -227,6 +228,84 @@ export const Responsive: Story = {
     };
     return <Harness />;
   },
+};
+
+/* ------------------------------------------------------------ SidebarTitle */
+
+/** The brand row as it usually appears: a mark beside the product name. */
+export const Title: Story = {
+  args: { collapsed: false },
+  render: () => (
+    <div className="flex h-[560px]">
+      <Sidebar>
+        <SidebarHeader>
+          <SidebarTitle mark={<Mark />}>gousse</SidebarTitle>
+          <SidebarClose />
+        </SidebarHeader>
+      </Sidebar>
+    </div>
+  ),
+};
+
+/**
+ * No mark. The slot keeps its width regardless, so the name sits on the same
+ * vertical line as a titled row that has one.
+ */
+export const TitleWithoutMark: Story = {
+  args: { collapsed: false },
+  render: () => (
+    <div className="flex h-[560px]">
+      <Sidebar>
+        <SidebarHeader>
+          <SidebarTitle>gousse</SidebarTitle>
+          <SidebarClose />
+        </SidebarHeader>
+      </Sidebar>
+    </div>
+  ),
+};
+
+/**
+ * As a link to the app root. `render` hands the computed class string to your
+ * own element — a router `NavLink` in an app, a plain `<a>` here — so this file
+ * takes on no router dependency.
+ */
+export const TitleAsLink: Story = {
+  args: { collapsed: false },
+  render: () => (
+    <div className="flex h-[560px]">
+      <Sidebar>
+        <SidebarHeader>
+          <SidebarTitle mark={<Mark />} render={(p) => <a href="#root" {...p} />}>
+            gousse
+          </SidebarTitle>
+          <SidebarClose />
+        </SidebarHeader>
+      </Sidebar>
+    </div>
+  ),
+};
+
+/**
+ * The three side by side, stacked so the shared text baseline is visible: with
+ * a mark, without one, and as a link (hover it to see the opacity fade take the
+ * mark and the name together).
+ */
+export const TitleAllVariants: Story = {
+  args: { collapsed: false },
+  render: () => (
+    <div className="flex h-[560px]">
+      <Sidebar>
+        <SidebarHeader className="flex-col items-stretch gap-3">
+          <SidebarTitle mark={<Mark />}>With mark</SidebarTitle>
+          <SidebarTitle>Without mark</SidebarTitle>
+          <SidebarTitle mark={<Mark />} render={(p) => <a href="#root" {...p} />}>
+            As a link
+          </SidebarTitle>
+        </SidebarHeader>
+      </Sidebar>
+    </div>
+  ),
 };
 
 /** Every row state side by side: rest, hover target, active, tinted, nested. */

@@ -33,6 +33,7 @@ export {
   Sidebar,
   SidebarShell,
   SidebarHeader,
+  SidebarTitle,
   SidebarContent,
   SidebarGroup,
   SidebarGroupLabel,
@@ -44,4 +45,5 @@ export {
   SidebarCollapsible,
   sidebarRowClass,
   type SidebarItemRenderProps,
+  type SidebarTitleRenderProps,
 } from "./sidebar.js";

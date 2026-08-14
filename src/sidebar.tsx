@@ -135,6 +135,101 @@ export function SidebarHeader({ className, ...props }: ComponentProps<"div">) {
 }
 
 /**
+ * The class string the brand row wears. Kept as a constant for the same reason
+ * `ROW_BASE` is: a consumer rendering its own element needs the exact string.
+ *
+ * Hover dims rather than recolors — the mark and the text have to fade together,
+ * and the mark is usually an image the row can't recolor.
+ */
+const TITLE_BASE =
+  "flex items-center gap-3 text-lg font-bold tracking-tight text-gousse-accent transition-opacity hover:opacity-80";
+
+/**
+ * The mark's slot. Fixed square, so the name after it sits on one line whether
+ * the slot is filled or empty. The mark decides its own size; the slot only
+ * reserves the space and centers it.
+ */
+const TITLE_MARK = "grid h-9 w-9 shrink-0 place-items-center overflow-hidden";
+
+/**
+ * What `render` receives. Deliberately element-agnostic — a div-typed prop bag
+ * can't be spread onto an `<a>` (every handler is typed to `HTMLDivElement`),
+ * so this stays to what any element accepts, as `SidebarItemRenderProps` does.
+ */
+export type SidebarTitleRenderProps = {
+  className: string;
+  children: ReactNode;
+};
+
+/**
+ * Render the row as your own element — a router link to the app root, most
+ * often. Receives the computed `className`; spread it onto the element you
+ * return. Keeps this file free of any router dependency, as `SidebarItem` does.
+ *
+ * ```tsx
+ * <SidebarTitle render={(p) => <Link to="/" {...p} />}>miel</SidebarTitle>
+ * ```
+ *
+ * Absent, the row renders as a plain `<div>` — a brand row that goes nowhere is
+ * not a link — and then accepts the usual div props.
+ */
+type SidebarTitleRender = (props: SidebarTitleRenderProps) => ReactNode;
+
+type SidebarTitleOwnProps = {
+  /** Rendered in a fixed-size square slot ahead of the name — a logo, an icon. */
+  mark?: ReactNode;
+  className?: string;
+  children?: ReactNode;
+};
+
+/**
+ * Two shapes, not one: with `render` the consumer owns the element, so the div
+ * props are gone from the type — passing one is a type error rather than the
+ * silent no-op it would be if it were accepted and then dropped.
+ */
+type SidebarTitleProps =
+  | (SidebarTitleOwnProps & { render: SidebarTitleRender })
+  | (SidebarTitleOwnProps & { render?: never } & Omit<
+        ComponentProps<"div">,
+        keyof SidebarTitleOwnProps
+      >);
+
+/**
+ * The brand row — logo mark plus product name — that heads the panel. Sits in
+ * `SidebarHeader` beside `SidebarClose`; the header's `justify-between` lays the
+ * two out, so this needs no layout of its own.
+ *
+ * The mark slot keeps its width whether or not a mark is passed, so the name
+ * lands on the same vertical line across apps with and without a logo.
+ */
+export function SidebarTitle({
+  mark,
+  className,
+  children,
+  render,
+  ...props
+}: SidebarTitleProps) {
+  const body = (
+    <>
+      <span className={TITLE_MARK}>{mark}</span>
+      {children}
+    </>
+  );
+
+  const titleClass = cn(TITLE_BASE, className);
+
+  // The `render` branch takes no div props — the type rules them out — so
+  // nothing here is dropped on the floor.
+  if (render) return <>{render({ className: titleClass, children: body })}</>;
+
+  return (
+    <div className={titleClass} {...props}>
+      {body}
+    </div>
+  );
+}
+
+/**
  * Scrolling middle region that holds the groups. The native scrollbar is hidden
  * (`.sidebar-scroll`): an always-on scrollbar claims real layout width, which
  * renders the scrolled rows narrower than the header and footer rows sitting
