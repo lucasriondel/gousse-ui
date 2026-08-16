@@ -1,7 +1,7 @@
 # gousse-ui
 
 A small set of React 19 + Tailwind v4 primitives — Button, Input, Badge, Select,
-DropdownMenu, Sidebar, and a dozen more — built on [Base UI](https://base-ui.com)
+DropdownMenu, Dialog, Sidebar, and a couple of dozen more — built on [Base UI](https://base-ui.com)
 and shipped as a **[shadcn registry](https://ui.shadcn.com/docs/registry)**.
 
 There is no package to install. The shadcn CLI copies the component **source into
@@ -45,14 +45,15 @@ Files land wherever your `components.json` aliases point — components at your
 |---|---|
 | React | `^19` (peer — yours, never installed by the registry) |
 | Tailwind | `v4` (`tailwindcss@^4.3`), CSS-first config — no `tailwind.config.ts` |
-| Primitives | `@base-ui-components/react@1.0.0-rc.0` — **a release candidate**, used by DropdownMenu and Separator |
+| Primitives | `@base-ui-components/react@1.0.0-rc.0` — **a release candidate**, used by Dialog, DropdownMenu and Separator |
 | Also pulled in | `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react` |
 
 The Base UI pin is a prerelease. That's a real adoption consideration, not a
 footnote — components that use it may need touching when Base UI hits 1.0.
 Everything else (Button, Input, Badge, Select, Checkbox, Switch, RadioGroup,
-Textarea, Sidebar, Empty, Avatar, Spinner, Sheen, RainbowGlow) wraps native
-elements or plain markup and doesn't depend on it.
+Textarea, Sidebar, Empty, Avatar, Spinner, Sheen, RainbowGlow, Notice, Steps,
+SettingRow, SecretField, SavedFlash, ProviderMark, CredentialTile, ModelRow)
+wraps native elements or plain markup and doesn't depend on it.
 
 ## Wire up the theme
 
@@ -103,7 +104,8 @@ Every radius is a class on a component you now own — override it in place.
 
 | item | type | what it is |
 |---|---|---|
-| `avatar` `badge` `button` `checkbox` `dropdown-menu` `empty` `input` `radio-group` `rainbow-glow` `select` `separator` `sheen` `sidebar` `spinner` `switch` `textarea` | `registry:ui` | the components |
+| `avatar` `badge` `button` `checkbox` `dialog` `dropdown-menu` `empty` `input` `notice` `radio-group` `rainbow-glow` `select` `separator` `setting-row` `sheen` `sidebar` `spinner` `steps` `switch` `textarea` | `registry:ui` | the components |
+| `credential-tile` `model-row` `provider-mark` `saved-flash` `secret-field` | `registry:ui` | the AI-provider set — credential entry and model choice |
 | `utils` `field-chrome` | `registry:lib` | `cn()`, and the shared text-field chrome string |
 | `tokens` `theme` `effects` | `registry:file` | the three stylesheets |
 

@@ -30,6 +30,25 @@ export {
   DropdownMenuLabel,
 } from "./dropdown-menu.js";
 export {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+  DialogCloseButton,
+} from "./dialog.js";
+export { Notice, NoticeList, NoticeListItem, type NoticeVariant } from "./notice.js";
+export { Steps, type Step } from "./steps.js";
+export { ProviderMark, KNOWN_PROVIDER_MARKS } from "./provider-mark.js";
+export { SettingsCard, SettingRow } from "./setting-row.js";
+export { SavedFlash } from "./saved-flash.js";
+export { SecretField } from "./secret-field.js";
+export { CredentialTile, CredentialGrid, CredentialStatusPill } from "./credential-tile.js";
+export { ModelRow, type ModelOption, type ProviderOption } from "./model-row.js";
+export {
   Sidebar,
   SidebarShell,
   SidebarHeader,
