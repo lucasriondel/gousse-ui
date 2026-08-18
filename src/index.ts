@@ -17,6 +17,7 @@ export { Select } from "./select.js";
 export { Checkbox } from "./checkbox.js";
 export { RadioGroup, RadioGroupItem } from "./radio-group.js";
 export { Switch } from "./switch.js";
+export { Tabs, TabsList, TabsTab, TabsIndicator, TabsPanel } from "./tabs.js";
 export {
   DropdownMenu,
   DropdownMenuTrigger,
