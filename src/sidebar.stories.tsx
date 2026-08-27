@@ -44,18 +44,19 @@ const HUE = {
   updates: "168 85 247",
 } as const;
 
-/** A stand-in logo mark — a consumer would drop an `<img>` in here instead. */
+/** A stand-in logo mark — a consumer would drop an `<img>` in here instead.
+ * Fills the 26px slot; the slot's own radius and hairline ring clip it. */
 const Mark = () => (
-  <span className="grid h-9 w-9 place-items-center rounded-md bg-gousse-accent/15 text-sm">
+  <span className="grid h-full w-full place-items-center bg-gousse-accent/15 text-xs">
     g
   </span>
 );
 
 const Brand = () => <SidebarTitle mark={<Mark />}>gousse</SidebarTitle>;
 
-const Count = ({ n }: { n: number }) => (
-  <span className="sidebar-count ml-auto text-xs tabular-nums text-gousse-muted">{n}</span>
-);
+/** `.sidebar-count` (sidebar-chrome.css) owns the styling: faint tabular
+ * figures at rest, the row's hue beside the active row. */
+const Count = ({ n }: { n: number }) => <span className="sidebar-count">{n}</span>;
 
 /** The body every shell story reuses. */
 const Body = ({ onToggle }: { onToggle?: () => void }) => {
@@ -95,7 +96,7 @@ const Body = ({ onToggle }: { onToggle?: () => void }) => {
           </SidebarItem>
         </SidebarGroup>
 
-        <SidebarGroup className="mt-3">
+        <SidebarGroup>
           <SidebarGroupLabel>Categories</SidebarGroupLabel>
           {(
             [
@@ -117,7 +118,7 @@ const Body = ({ onToggle }: { onToggle?: () => void }) => {
           ))}
         </SidebarGroup>
 
-        <SidebarGroup className="mt-3">
+        <SidebarGroup>
           <SidebarGroupLabel>Labels</SidebarGroupLabel>
           <SidebarItem
             active={selected === "work"}
@@ -159,9 +160,18 @@ const Body = ({ onToggle }: { onToggle?: () => void }) => {
         >
           <span className="truncate">Logs</span>
         </SidebarItem>
-        {/* aria-current="page" is what a router link sets; the CSS keys off it. */}
+        {/* aria-current="page" is what a router link sets; the CSS keys off it
+            the same as `data-active`. Driven by the shared selection here so
+            the panel has one active row at a time, as a router would ensure. */}
         <SidebarItem
-          render={(p) => <a href="#settings" aria-current="page" {...p} />}
+          render={(p) => (
+            <a
+              href="#settings"
+              aria-current={selected === "settings" ? "page" : undefined}
+              onClick={() => setSelected("settings")}
+              {...p}
+            />
+          )}
           icon={<Settings aria-hidden className={ICON} />}
         >
           <span className="truncate">Settings</span>
@@ -203,12 +213,11 @@ export const Collapsed: Story = {
 };
 
 /**
- * The mark travels: click a row and the stroke on the panel's right border
- * slides to it, taking that row's hue on the way. This is the state the old
- * per-row bar could not show — one indicator, moving, rather than one bar per
- * row appearing in place.
+ * The mark's enter/leave: click a row and its stroke fades and grows in while
+ * the old row's recedes — pure CSS on each row, no travelling element. Each
+ * stroke carries its own row's hue.
  */
-export const MarkTravels: Story = {
+export const MarkEnterLeave: Story = {
   args: { collapsed: false },
   render: () => {
     const Harness = () => {
@@ -252,8 +261,8 @@ export const MarkTravels: Story = {
             </SidebarFooter>
           </Sidebar>
           <div className="flex-1 p-6 text-sm text-gousse-muted">
-            Click a row — the mark slides and recolors. It reaches the footer row
-            too, which the per-group bars it replaced could not.
+            Click a row — its stroke fades in as the old one fades out, each in
+            its own row's hue. Footer rows carry one the same way.
           </div>
         </div>
       );
@@ -263,9 +272,8 @@ export const MarkTravels: Story = {
 };
 
 /**
- * No active row: the mark is simply absent. A panel whose current destination
- * isn't in the list (a detail route, a modal surface) shows no stroke rather
- * than pointing at the wrong row.
+ * No active row: no stroke anywhere. A panel whose current destination isn't
+ * in the list (a detail route, a modal surface) simply marks nothing.
  */
 export const MarkWithoutActiveRow: Story = {
   args: { collapsed: false },
@@ -288,16 +296,16 @@ export const MarkWithoutActiveRow: Story = {
         </SidebarContent>
       </Sidebar>
       <div className="flex-1 p-6 text-sm text-gousse-muted">
-        Nothing is active, so the right border carries no stroke.
+        Nothing is active, so no row carries a stroke.
       </div>
     </div>
   ),
 };
 
 /**
- * The mark inside a scrolling list. It is positioned from `offsetTop` and
- * re-measured on scroll, so it stays locked to its row rather than drifting as
- * the region moves under it.
+ * The mark inside a scrolling list. It is part of the row, so it scrolls with
+ * it and clips at the region's edge like any row content — no measuring, no
+ * lag, nothing to drift.
  */
 export const MarkInScrollRegion: Story = {
   args: { collapsed: false },
@@ -435,13 +443,10 @@ export const TitleAllVariants: Story = {
   ),
 };
 
-/** Every row state side by side: rest, hover target, active, tinted, nested. */
 /**
- * The state catalogue. Each panel holds at most one active row, because the
- * mark points at one row per panel — a single column showing four active rows
- * at once would draw four washes under one stroke and misreport the component.
- * That is the visible cost of trading per-row bars for one travelling mark, and
- * splitting the catalogue into panels is how the states stay comparable.
+ * The state catalogue: rest, count, disabled, depth, active (by `data-active`
+ * and by `aria-current`), tinted hues, and a `markHue` split from the row hue.
+ * Split into panels so each active treatment reads against its own neighbours.
  */
 export const AllVariants: Story = {
   args: { collapsed: false },
@@ -469,7 +474,7 @@ export const AllVariants: Story = {
               <span className="truncate">Disabled</span>
             </SidebarItem>
           </SidebarGroup>
-          <SidebarGroup className="mt-3">
+          <SidebarGroup>
             <SidebarGroupLabel>Depth</SidebarGroupLabel>
             <SidebarItem icon={<Tag aria-hidden className={ICON} />}>
               <span className="truncate">Parent</span>
@@ -501,7 +506,7 @@ export const AllVariants: Story = {
               <span className="truncate">Sibling at rest</span>
             </SidebarItem>
           </SidebarGroup>
-          <SidebarGroup className="mt-3">
+          <SidebarGroup>
             <SidebarGroupLabel>Hues</SidebarGroupLabel>
             <SidebarItem hue={HUE.social} tinted icon={<Tag aria-hidden className={ICON} />}>
               <span className="truncate">Social</span>
