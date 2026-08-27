@@ -334,7 +334,7 @@ export function sidebarRowClass(active: boolean, className?: string): string {
 export function SidebarGlyph({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
-      className={cn("grid h-4 w-4 shrink-0 place-items-center", className)}
+      className={cn("sidebar-glyph grid h-4 w-4 shrink-0 place-items-center", className)}
       {...props}
     />
   );

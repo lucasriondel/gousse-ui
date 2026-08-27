@@ -35,7 +35,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const ICON = "sidebar-glyph h-4 w-4";
+const ICON = "h-4 w-4";
 
 /** Category accents, as the `r g b` triplets `--hue` expects. */
 const HUE = {
@@ -299,6 +299,57 @@ export const MarkWithoutActiveRow: Story = {
       </div>
     </div>
   ),
+};
+
+/**
+ * The active glyph takes the row's own hue, not the app accent. A row with a
+ * forced `hue` keeps that colour when it becomes the active row, so the glyph,
+ * the count and the mark all read as one colour — and a `tinted` category row
+ * goes to full strength when active rather than staying at its rest tint.
+ *
+ * Two colours side by side: the un-hued row falls back to the accent, the
+ * hued ones each hold their own.
+ */
+export const ActiveGlyphTakesRowHue: Story = {
+  args: { collapsed: false },
+  render: function Render() {
+    const [active, setActive] = useState("social");
+    const rows = [
+      { id: "inbox", label: "Inbox", icon: Inbox, hue: undefined, tinted: false },
+      { id: "social", label: "Social", icon: Tag, hue: HUE.social, tinted: true },
+      { id: "promos", label: "Promotions", icon: Tag, hue: HUE.promos, tinted: true },
+      { id: "updates", label: "Updates", icon: Tag, hue: HUE.updates, tinted: true },
+    ];
+    return (
+      <div className="flex h-screen">
+        <Sidebar>
+          <SidebarHeader>
+            <SidebarTitle>gousse</SidebarTitle>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Categories</SidebarGroupLabel>
+              {rows.map((row) => (
+                <SidebarItem
+                  key={row.id}
+                  active={active === row.id}
+                  onClick={() => setActive(row.id)}
+                  hue={row.hue}
+                  tinted={row.tinted}
+                  icon={<row.icon aria-hidden className={ICON} />}
+                >
+                  <span className="truncate">{row.label}</span>
+                </SidebarItem>
+              ))}
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        <div className="flex-1 p-6 text-sm text-gousse-muted">
+          Click each row — the glyph, the count and the mark always share the row&apos;s hue.
+        </div>
+      </div>
+    );
+  },
 };
 
 /**
