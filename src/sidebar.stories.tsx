@@ -44,12 +44,11 @@ const HUE = {
   updates: "168 85 247",
 } as const;
 
-/** A stand-in logo mark — a consumer would drop an `<img>` in here instead.
- * Fills the 26px slot; the slot's own radius and hairline ring clip it. */
+/** The brand mark as a consumer ships it: an `<img>` filling the 26px slot —
+ * the slot's own radius clips it. Served from `.storybook/public`;
+ * harness-only, not part of any registry item. */
 const Mark = () => (
-  <span className="grid h-full w-full place-items-center bg-gousse-accent/15 text-xs">
-    g
-  </span>
+  <img src="gousse-mark.png" alt="" className="h-full w-full object-cover" />
 );
 
 const Brand = () => <SidebarTitle mark={<Mark />}>gousse</SidebarTitle>;
