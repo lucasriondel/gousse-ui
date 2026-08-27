@@ -10,49 +10,99 @@
 
 /* ------------------------------------------------------------
    ROW — hue-driven interactions. A single per-row `--hue` custom
-   property feeds bg, the left active bar, and glyph + count tint
-   across rest/hover/active. `--hue` defaults to the accent;
-   category rows override it inline. Tinted rows also carry their
-   hue on the glyph at rest.
+   property feeds bg and glyph + count tint across rest/hover/
+   active. `--hue` defaults to the accent; category rows override
+   it inline. Tinted rows also carry their hue on the glyph at
+   rest.
 
-   The bar reads `--bar-hue`, which falls back to `--hue` — so by
-   default the bar tracks the row's hue (and thus the accent), but
-   a consumer can recolor the bar alone, leaving the hover fill and
-   the glyph tint on the row hue.
+   The washes are deliberately quiet — 6% on hover, 9% active. The
+   sidebar is the one piece of chrome every page pays for, and a
+   heavier fill makes the nav louder than the content it points at.
+   The active row is also carried by weight and ink color (see
+   `sidebarRowClass`), so the fill only has to place the row, not
+   announce it on its own.
+
+   NOTE — the growing left bar this sheet used to draw is gone. Its
+   replacement is `.sidebar-mark`, one stroke on the panel's right
+   border that travels to the active row; see below. `--bar-hue`
+   survives under its new name `--mark-hue`, still falling back to
+   `--hue` so a consumer can recolor the stroke alone.
    ------------------------------------------------------------ */
 .sidebar-row {
   --hue: var(--gousse-accent);
-  /* Bar knobs, declared here so they are discoverable and so a consumer can
-     override either one at any scope. `--bar-hue` tracks `--hue` unless set. */
-  --bar-hue: var(--hue);
-  --bar-width: 2.5px;
   position: relative;
 }
-.sidebar-row::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  height: 0;
-  width: var(--bar-width);
-  border-radius: 9999px;
-  background: rgb(var(--bar-hue));
-  transform: translateY(-50%);
-  transition: height 0.18s cubic-bezier(0.2, 0, 0, 1);
-}
 .sidebar-row:hover {
-  background: rgb(var(--hue) / 0.12);
-}
-.sidebar-row:hover::before {
-  height: 14px;
+  background: rgb(var(--hue) / 0.06);
 }
 .sidebar-row[data-active="true"],
 .sidebar-row[aria-current="page"] {
-  background: rgb(var(--hue) / 0.14);
+  background: rgb(var(--hue) / 0.09);
 }
-.sidebar-row[data-active="true"]::before,
-.sidebar-row[aria-current="page"]::before {
-  height: 18px;
+
+/* ------------------------------------------------------------
+   MARK — the active indicator, on the panel's right border.
+
+   One element per panel rather than one per row, because the
+   stroke rides the shell's own `border-r`: a per-row pseudo
+   element cannot reach out of the scrolling region to sit on it,
+   and three marks in three groups would each measure against a
+   different offset parent and fall out of register.
+
+   `sidebar.tsx` owns the two values that cannot be expressed in
+   CSS — `--mark-y`, the active row's offset within the panel, and
+   `--mark-hue`, that row's resolved hue hoisted up to the shell
+   (an element cannot read a descendant's custom property). Absent
+   an active row the stroke is transparent, so a panel with no
+   current destination simply shows nothing.
+
+   `--mark-height` and `--mark-width` are the CSS-only knobs, in
+   the spirit of the `--bar-*` pair they replace.
+   ------------------------------------------------------------ */
+.sidebar-shell {
+  --mark-height: 20px;
+  --mark-width: 2.5px;
+  /* Declared here with their resting values so this sheet states its own
+     contract and stands alone: a shell rendered without the component's script
+     is simply a panel whose stroke sits at the top, rather than one whose
+     transform resolves to nothing. `sidebar.tsx` overwrites all three per
+     measure pass — `--mark-y` and `--mark-row-height` from the active row's
+     layout box, `--mark-hue` from its resolved hue. */
+  --mark-y: 0px;
+  --mark-row-height: 36px;
+  --mark-hue: var(--gousse-accent);
+}
+.sidebar-mark {
+  position: absolute;
+  right: -1px; /* straddles the 1px border-r, rather than sitting inside it */
+  top: 0;
+  width: var(--mark-width);
+  height: var(--mark-height);
+  border-radius: var(--mark-width) 0 0 var(--mark-width);
+  background: rgb(var(--mark-hue));
+  /* `--mark-y` is the row's top; the stroke is centered on the row's box. */
+  transform: translateY(calc(var(--mark-y) + (var(--mark-row-height) - var(--mark-height)) / 2));
+  transition:
+    transform 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+    background-color 0.3s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  opacity: 1;
+  pointer-events: none;
+  will-change: transform;
+}
+/* No active row, or the panel is collapsed — nothing to point at. */
+.sidebar-mark[data-hidden="true"] {
+  opacity: 0;
+}
+/* The first paint must not animate in from y=0: `sidebar.tsx` sets this flag
+   for exactly one frame while it applies the initial position. */
+.sidebar-mark[data-instant="true"] {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-mark {
+    transition: none;
+  }
 }
 
 /* Glyphs rest at muted and take the hue on hover/active. Set here rather than
@@ -65,7 +115,8 @@
 .sidebar-row:hover .sidebar-glyph,
 .sidebar-row[data-active="true"] .sidebar-glyph,
 .sidebar-row[aria-current="page"] .sidebar-glyph,
-.sidebar-row[data-active="true"] .sidebar-count {
+.sidebar-row[data-active="true"] .sidebar-count,
+.sidebar-row[aria-current="page"] .sidebar-count {
   color: rgb(var(--hue));
 }
 /* category rows: glyph is softly tinted even at rest */

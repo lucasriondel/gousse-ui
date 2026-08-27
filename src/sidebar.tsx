@@ -1,4 +1,5 @@
 import type { CSSProperties, ComponentProps, ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { cn } from "./utils.js";
 
@@ -13,12 +14,20 @@ import { cn } from "./utils.js";
  * (+ SidebarGroupLabel) / SidebarItem (nav row) / SidebarGlyph (icon slot) /
  * SidebarFooter, plus SidebarTrigger for the collapsed-state open button.
  *
- * The hue-driven row surfaces (hover fill, left active bar, glyph tint) live in
+ * The hue-driven row surfaces (hover fill, glyph tint, count tint) live in
  * `sidebar-chrome.css` — a single per-row `--hue` custom property feeds rest, hover and
  * active uniformly, which Tailwind can't express cleanly. Install that sheet
- * alongside this file or rows render flat. The left bar reads `--bar-hue` and
- * falls back to `--hue`, so `barHue` recolors it alone; `--bar-width` (2.5px by
- * default) is the matching CSS-only knob for its thickness.
+ * alongside this file or rows render flat.
+ *
+ * The active row is marked by a stroke on the panel's right border that travels
+ * to it — `.sidebar-mark`, one per panel rather than one per row, because it
+ * rides the shell's own `border-r` and a per-row pseudo element can't reach out
+ * of the scroll region to sit there. The two values CSS can't derive are set
+ * here by `useSidebarMark`: `--mark-y` (the active row's offset in the panel)
+ * and `--mark-hue` (that row's resolved hue, hoisted to the shell, since an
+ * element can't read a descendant's custom property). `markHue` on a row
+ * recolors the stroke alone; `--mark-height` / `--mark-width` are the CSS-only
+ * knobs for its size.
  */
 
 /* ------------------------------------------------------------------ shells */
@@ -32,7 +41,107 @@ import { cn } from "./utils.js";
  * collapsed so its rows leave the tab order and the a11y tree.
  */
 const SHELL_BASE =
-  "flex h-full shrink-0 flex-col overflow-hidden border-r border-gousse-line bg-gousse-panel text-gousse-ink";
+  "sidebar-shell relative flex h-full shrink-0 flex-col overflow-hidden border-r border-gousse-line bg-gousse-panel text-gousse-ink";
+
+/**
+ * Drives `.sidebar-mark` — the stroke on the panel's right border that travels
+ * to the active row.
+ *
+ * Everything here is what CSS cannot do on its own. The mark rides the shell's
+ * `border-r`, so it lives on the shell rather than on a row; that puts it out
+ * of reach of any per-row selector, and it also means the *shell* has to carry
+ * the active row's hue, because an element cannot read a custom property from a
+ * descendant. So each measure pass copies two values up: the row's offset
+ * within the panel, and its resolved `--hue`.
+ *
+ * Position comes from `offsetTop` rather than `getBoundingClientRect`. The rect
+ * is affected by the mark's own in-flight transform and by the scroller's
+ * position; `offsetTop` is a static layout value, so a burst of navigations
+ * can't compound into drift. The walk sums offsets up to the shell because a
+ * row nested in a group (or in a `SidebarCollapsible`) has its own offset
+ * parent.
+ *
+ * Re-measures on: the active row changing, the panel resizing, the scroll
+ * region scrolling, and fonts finishing — a webfont swap shifts row metrics
+ * after first paint, which would otherwise leave the stroke a few px off.
+ */
+function useSidebarMark(collapsed: boolean) {
+  const shellRef = useRef<HTMLElement | null>(null);
+  const markRef = useRef<HTMLSpanElement | null>(null);
+  // Suppresses the transition for the first placement, so the stroke appears at
+  // the active row instead of sliding down from the top of the panel.
+  const [instant, setInstant] = useState(true);
+
+  const measure = useCallback(() => {
+    const shell = shellRef.current;
+    const mark = markRef.current;
+    if (!shell || !mark) return;
+
+    const active = shell.querySelector<HTMLElement>(
+      '.sidebar-row[data-active="true"], .sidebar-row[aria-current="page"]',
+    );
+    if (!active) {
+      mark.dataset.hidden = "true";
+      return;
+    }
+    delete mark.dataset.hidden;
+
+    let y = 0;
+    for (let node: HTMLElement | null = active; node && node !== shell; node = node.offsetParent as HTMLElement | null) {
+      y += node.offsetTop;
+    }
+
+    shell.style.setProperty("--mark-y", `${y}px`);
+    shell.style.setProperty("--mark-row-height", `${active.offsetHeight}px`);
+    // `--mark-hue` may be set on the row itself (the `markHue` prop); fall back
+    // to the row's `--hue` so the stroke matches the row by default.
+    const rowStyle = getComputedStyle(active);
+    const hue =
+      rowStyle.getPropertyValue("--mark-hue").trim() || rowStyle.getPropertyValue("--hue").trim();
+    if (hue) shell.style.setProperty("--mark-hue", hue);
+  }, []);
+
+  // Layout effect so the stroke is placed before paint — a visible frame at the
+  // wrong position is the one artifact this whole hook exists to avoid.
+  useLayoutEffect(() => {
+    measure();
+    // Release the no-transition flag one frame later, so subsequent moves animate.
+    const id = requestAnimationFrame(() => setInstant(false));
+    return () => cancelAnimationFrame(id);
+  });
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    if (!shell) return;
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(shell);
+
+    const scroller = shell.querySelector(".sidebar-scroll");
+    scroller?.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    // A webfont swap changes row metrics after first paint.
+    document.fonts?.ready.then(measure).catch(() => {});
+
+    return () => {
+      observer.disconnect();
+      scroller?.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
+  }, [measure]);
+
+  const mark = (
+    <span
+      ref={markRef}
+      aria-hidden
+      className="sidebar-mark"
+      data-instant={instant || collapsed ? "true" : undefined}
+      data-hidden={collapsed ? "true" : undefined}
+    />
+  );
+
+  return { shellRef, mark };
+}
 
 /** Fixed inner width so children don't reflow while the shell's width animates. */
 function SidebarInner({ className, ...props }: ComponentProps<"div">) {
@@ -56,8 +165,10 @@ export function Sidebar({
   children,
   ...props
 }: ComponentProps<"aside"> & { collapsed?: boolean }) {
+  const { shellRef, mark } = useSidebarMark(collapsed);
   return (
     <aside
+      ref={shellRef}
       inert={collapsed ? true : undefined}
       data-collapsed={collapsed || undefined}
       className={cn(
@@ -69,6 +180,7 @@ export function Sidebar({
       {...props}
     >
       <SidebarInner>{children}</SidebarInner>
+      {mark}
     </aside>
   );
 }
@@ -94,6 +206,7 @@ export function SidebarShell({
   /** Accessible name for the mobile scrim button. */
   closeLabel?: string;
 }) {
+  const { shellRef, mark } = useSidebarMark(collapsed);
   return (
     <>
       <button
@@ -107,6 +220,7 @@ export function SidebarShell({
         )}
       />
       <aside
+        ref={shellRef}
         inert={collapsed ? true : undefined}
         data-collapsed={collapsed || undefined}
         className={cn(
@@ -120,6 +234,7 @@ export function SidebarShell({
         {...props}
       >
         <SidebarInner>{children}</SidebarInner>
+        {mark}
       </aside>
     </>
   );
@@ -323,12 +438,13 @@ type SidebarItemOwnProps = {
   /** Row accent as an `r g b` triplet; drives the row's `--hue`. */
   hue?: string;
   /**
-   * The left active bar's color as an `r g b` triplet, when it should differ
+   * The travelling mark's color as an `r g b` triplet, when it should differ
    * from the rest of the row. Defaults to `hue` (and so to the accent), which
-   * is what keeps the bar, the hover fill and the glyph tint reading as one
-   * color unless you deliberately split them.
+   * is what keeps the mark, the hover fill and the glyph tint reading as one
+   * color unless you deliberately split them. Only read while the row is the
+   * active one — the mark points at a single row at a time.
    */
-  barHue?: string;
+  markHue?: string;
   /** Tint the glyph with the hue at rest (used for category mailboxes). */
   tinted?: boolean;
   /** Collapsed state of the branch this row heads; rotates a `.sidebar-chevron`. */
@@ -374,7 +490,7 @@ export function SidebarItem({
   trailing,
   depth = 0,
   hue,
-  barHue,
+  markHue,
   tinted,
   branchCollapsed,
   className,
@@ -385,7 +501,7 @@ export function SidebarItem({
 }: SidebarItemProps) {
   const rowStyle: CSSProperties = { ...style };
   if (hue) (rowStyle as Record<string, string>)["--hue"] = hue;
-  if (barHue) (rowStyle as Record<string, string>)["--bar-hue"] = barHue;
+  if (markHue) (rowStyle as Record<string, string>)["--mark-hue"] = markHue;
   // One step = the glyph slot + its gap, so a child's text sits directly under
   // its parent's text rather than drifting off on its own margin.
   if (depth > 0) rowStyle.paddingLeft = `${0.625 + depth * 1.625}rem`;

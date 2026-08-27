@@ -203,6 +203,133 @@ export const Collapsed: Story = {
 };
 
 /**
+ * The mark travels: click a row and the stroke on the panel's right border
+ * slides to it, taking that row's hue on the way. This is the state the old
+ * per-row bar could not show — one indicator, moving, rather than one bar per
+ * row appearing in place.
+ */
+export const MarkTravels: Story = {
+  args: { collapsed: false },
+  render: () => {
+    const Harness = () => {
+      const rows = [
+        ["Inbox", Inbox, undefined],
+        ["Sent", Send, HUE.social],
+        ["Archive", Archive, HUE.promos],
+        ["Logs", ScrollText, HUE.updates],
+      ] as const;
+      const [active, setActive] = useState("Inbox");
+      return (
+        <div className="flex h-screen">
+          <Sidebar>
+            <SidebarHeader>
+              <SidebarTitle>gousse</SidebarTitle>
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupLabel>Mail</SidebarGroupLabel>
+                {rows.map(([label, Icon, hue]) => (
+                  <SidebarItem
+                    key={label}
+                    active={active === label}
+                    hue={hue}
+                    onClick={() => setActive(label)}
+                    icon={<Icon aria-hidden className={ICON} />}
+                  >
+                    <span className="truncate">{label}</span>
+                  </SidebarItem>
+                ))}
+              </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+              <SidebarItem
+                active={active === "Settings"}
+                onClick={() => setActive("Settings")}
+                icon={<Settings aria-hidden className={ICON} />}
+              >
+                <span className="truncate">Settings</span>
+              </SidebarItem>
+            </SidebarFooter>
+          </Sidebar>
+          <div className="flex-1 p-6 text-sm text-gousse-muted">
+            Click a row — the mark slides and recolors. It reaches the footer row
+            too, which the per-group bars it replaced could not.
+          </div>
+        </div>
+      );
+    };
+    return <Harness />;
+  },
+};
+
+/**
+ * No active row: the mark is simply absent. A panel whose current destination
+ * isn't in the list (a detail route, a modal surface) shows no stroke rather
+ * than pointing at the wrong row.
+ */
+export const MarkWithoutActiveRow: Story = {
+  args: { collapsed: false },
+  render: () => (
+    <div className="flex h-screen">
+      <Sidebar>
+        <SidebarHeader>
+          <SidebarTitle>gousse</SidebarTitle>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Mail</SidebarGroupLabel>
+            <SidebarItem icon={<Inbox aria-hidden className={ICON} />}>
+              <span className="truncate">Inbox</span>
+            </SidebarItem>
+            <SidebarItem icon={<Send aria-hidden className={ICON} />}>
+              <span className="truncate">Sent</span>
+            </SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <div className="flex-1 p-6 text-sm text-gousse-muted">
+        Nothing is active, so the right border carries no stroke.
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * The mark inside a scrolling list. It is positioned from `offsetTop` and
+ * re-measured on scroll, so it stays locked to its row rather than drifting as
+ * the region moves under it.
+ */
+export const MarkInScrollRegion: Story = {
+  args: { collapsed: false },
+  render: () => (
+    <div className="flex h-screen">
+      <Sidebar>
+        <SidebarHeader>
+          <SidebarTitle>gousse</SidebarTitle>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Many rows</SidebarGroupLabel>
+            {Array.from({ length: 24 }, (_, i) => (
+              <SidebarItem
+                key={i}
+                active={i === 11}
+                icon={<Tag aria-hidden className={ICON} />}
+              >
+                <span className="truncate">Label {i + 1}</span>
+              </SidebarItem>
+            ))}
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <div className="flex-1 p-6 text-sm text-gousse-muted">
+        Scroll the panel — the mark tracks row 12.
+      </div>
+    </div>
+  ),
+};
+
+/**
  * The real app shell: `SidebarShell` + `SidebarTrigger`, wired to one piece of
  * state. Narrow the viewport to see the mobile drawer and its scrim.
  */
@@ -309,10 +436,18 @@ export const TitleAllVariants: Story = {
 };
 
 /** Every row state side by side: rest, hover target, active, tinted, nested. */
+/**
+ * The state catalogue. Each panel holds at most one active row, because the
+ * mark points at one row per panel — a single column showing four active rows
+ * at once would draw four washes under one stroke and misreport the component.
+ * That is the visible cost of trading per-row bars for one travelling mark, and
+ * splitting the catalogue into panels is how the states stay comparable.
+ */
 export const AllVariants: Story = {
   args: { collapsed: false },
   render: () => (
-    <div className="flex h-screen">
+    <div className="flex h-screen gap-px bg-gousse-line">
+      {/* Row states — the active one lives in its own panel below. */}
       <Sidebar>
         <SidebarHeader>
           <Brand />
@@ -324,70 +459,16 @@ export const AllVariants: Story = {
             <SidebarItem icon={<Inbox aria-hidden className={ICON} />}>
               <span className="truncate">Rest</span>
             </SidebarItem>
-            <SidebarItem active icon={<Inbox aria-hidden className={ICON} />}>
-              <span className="truncate">Active</span>
-            </SidebarItem>
             <SidebarItem
               icon={<Inbox aria-hidden className={ICON} />}
               trailing={<Count n={3} />}
             >
               <span className="truncate">With count</span>
             </SidebarItem>
-            <SidebarItem
-              render={(p) => <a href="#current" aria-current="page" {...p} />}
-              icon={<Settings aria-hidden className={ICON} />}
-            >
-              <span className="truncate">Link, aria-current</span>
+            <SidebarItem disabled icon={<Inbox aria-hidden className={ICON} />}>
+              <span className="truncate">Disabled</span>
             </SidebarItem>
           </SidebarGroup>
-
-          <SidebarGroup className="mt-3">
-            <SidebarGroupLabel>Hues</SidebarGroupLabel>
-            {(
-              [
-                ["Social", HUE.social],
-                ["Promotions", HUE.promos],
-                ["Updates", HUE.updates],
-              ] as const
-            ).map(([label, hue]) => (
-              <SidebarItem
-                key={label}
-                hue={hue}
-                tinted
-                icon={<Tag aria-hidden className={ICON} />}
-              >
-                <span className="truncate">{label}</span>
-              </SidebarItem>
-            ))}
-            <SidebarItem active hue={HUE.social} icon={<Tag aria-hidden className={ICON} />}>
-              <span className="truncate">Active, hued</span>
-            </SidebarItem>
-          </SidebarGroup>
-
-          {/* `barHue` recolors the left bar alone — the hover fill and the glyph
-              tint stay on the row's `hue`. Absent, the bar tracks `hue`. */}
-          <SidebarGroup className="mt-3">
-            <SidebarGroupLabel>Bar hue</SidebarGroupLabel>
-            <SidebarItem active icon={<Tag aria-hidden className={ICON} />}>
-              <span className="truncate">Default (accent)</span>
-            </SidebarItem>
-            <SidebarItem
-              active
-              barHue={HUE.social}
-              icon={<Tag aria-hidden className={ICON} />}
-            >
-              <span className="truncate">Bar only</span>
-            </SidebarItem>
-            <SidebarItem
-              active
-              hue={HUE.promos}
-              barHue={HUE.updates}
-              icon={<Tag aria-hidden className={ICON} />}
-            >
-              <span className="truncate">Bar vs row hue</span>
-            </SidebarItem>
-          </SidebarGroup>
-
           <SidebarGroup className="mt-3">
             <SidebarGroupLabel>Depth</SidebarGroupLabel>
             <SidebarItem icon={<Tag aria-hidden className={ICON} />}>
@@ -407,9 +488,71 @@ export const AllVariants: Story = {
           </SidebarItem>
         </SidebarFooter>
       </Sidebar>
-      <div className="flex-1 p-6">
-        <SidebarTrigger />
-      </div>
+
+      {/* Active by `active`, and the same row hued. */}
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Active</SidebarGroupLabel>
+            <SidebarItem active icon={<Inbox aria-hidden className={ICON} />}>
+              <span className="truncate">Active</span>
+            </SidebarItem>
+            <SidebarItem icon={<Inbox aria-hidden className={ICON} />}>
+              <span className="truncate">Sibling at rest</span>
+            </SidebarItem>
+          </SidebarGroup>
+          <SidebarGroup className="mt-3">
+            <SidebarGroupLabel>Hues</SidebarGroupLabel>
+            <SidebarItem hue={HUE.social} tinted icon={<Tag aria-hidden className={ICON} />}>
+              <span className="truncate">Social</span>
+            </SidebarItem>
+            <SidebarItem hue={HUE.promos} tinted icon={<Tag aria-hidden className={ICON} />}>
+              <span className="truncate">Promotions</span>
+            </SidebarItem>
+            <SidebarItem hue={HUE.updates} tinted icon={<Tag aria-hidden className={ICON} />}>
+              <span className="truncate">Updates</span>
+            </SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+
+      {/* Active by `aria-current`, which the mark honours identically. */}
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>aria-current</SidebarGroupLabel>
+            <SidebarItem icon={<Inbox aria-hidden className={ICON} />}>
+              <span className="truncate">Rest</span>
+            </SidebarItem>
+            <SidebarItem
+              render={(p) => <a href="#current" aria-current="page" {...p} />}
+              icon={<Settings aria-hidden className={ICON} />}
+            >
+              <span className="truncate">Link, aria-current</span>
+            </SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+
+      {/* `markHue` recolors the stroke alone; the row keeps its own `hue`. */}
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Mark hue</SidebarGroupLabel>
+            <SidebarItem
+              active
+              hue={HUE.promos}
+              markHue={HUE.updates}
+              icon={<Tag aria-hidden className={ICON} />}
+            >
+              <span className="truncate">Mark vs row hue</span>
+            </SidebarItem>
+            <SidebarItem hue={HUE.promos} icon={<Tag aria-hidden className={ICON} />}>
+              <span className="truncate">Same hue, inactive</span>
+            </SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
     </div>
   ),
 };
