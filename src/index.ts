@@ -50,6 +50,16 @@ export { SecretField } from "./secret-field.js";
 export { CredentialTile, CredentialGrid, CredentialStatusPill } from "./credential-tile.js";
 export { ModelRow, type ModelOption, type ProviderOption } from "./model-row.js";
 export {
+  AppShell,
+  AppMain,
+  AppContent,
+  TopBar,
+  TopBarStart,
+  TopBarTitle,
+  TopBarEnd,
+  useAppShell,
+} from "./app-shell.js";
+export {
   Sidebar,
   SidebarShell,
   SidebarHeader,
