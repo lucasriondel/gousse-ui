@@ -22,13 +22,21 @@
   filter: blur(8px);
   opacity: 0;
   transition: opacity 0.35s ease;
+  /* A query container so the rotating square below can size itself off the
+     host's *taller* side too. Percentages resolve against width alone, so on a
+     tall host (a long list card) a width-sized square stops short of the top
+     and bottom edges and the halo only lights a band in the middle. */
+  container-type: size;
 }
 .gousse-rainbow-glow::before {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 250%;
+  /* Square, and wide enough to cover the host at every rotation angle: a
+     rotating square only stays covering while its side exceeds the host's
+     diagonal, so take the larger dimension on both axes. */
+  width: max(250cqw, 250cqh);
   aspect-ratio: 1;
   transform: translate(-50%, -50%) rotate(0deg);
   background: conic-gradient(
@@ -54,7 +62,7 @@
   filter: blur(10px);
 }
 .gousse-rainbow-glow--card::before {
-  width: 220%;
+  width: max(220cqw, 220cqh);
 }
 
 /* Visibility: `always` sits permanently lit (the card case); the default
