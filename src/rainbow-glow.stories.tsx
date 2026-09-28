@@ -20,10 +20,7 @@ type Story = StoryObj<typeof meta>;
 export const PillOnHover: Story = {
   args: { variant: "pill", trigger: "hover" },
   render: (args) => (
-    <button
-      type="button"
-      className="group relative isolate inline-flex items-center rounded-full"
-    >
+    <button type="button" className="group relative isolate inline-flex items-center rounded-full">
       <RainbowGlow {...args} />
       <span className="relative z-[1] m-0.5 rounded-full bg-gousse-accent/[0.12] px-3 py-2 text-[13px] font-bold text-gousse-accent group-hover:bg-gousse-panel group-hover:text-gousse-ink group-hover:shadow-gousse-sm">
         ✦ Triage

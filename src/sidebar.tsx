@@ -50,10 +50,7 @@ const SHELL_BASE =
  */
 function SidebarInner({ className, ...props }: ComponentProps<"div">) {
   return (
-    <div
-      className={cn("flex h-full w-62 shrink-0 flex-col pb-4.5 pt-5.5", className)}
-      {...props}
-    />
+    <div className={cn("flex h-full w-62 shrink-0 flex-col pb-4.5 pt-5.5", className)} {...props} />
   );
 }
 
@@ -143,10 +140,7 @@ export function SidebarShell({
 export function SidebarHeader({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
-      className={cn(
-        "flex items-center justify-between gap-2 pb-6.5 pl-5 pr-3.5",
-        className,
-      )}
+      className={cn("flex items-center justify-between gap-2 pb-6.5 pl-5 pr-3.5", className)}
       {...props}
     />
   );
@@ -223,18 +217,10 @@ type SidebarTitleProps =
  * The mark slot keeps its width whether or not a mark is passed, so the name
  * lands on the same vertical line across apps with and without a logo.
  */
-export function SidebarTitle({
-  mark,
-  className,
-  children,
-  render,
-  ...props
-}: SidebarTitleProps) {
+export function SidebarTitle({ mark, className, children, render, ...props }: SidebarTitleProps) {
   const body = (
     <>
-      <span className={cn(TITLE_MARK, mark != null && TITLE_MARK_FILLED)}>
-        {mark}
-      </span>
+      <span className={cn(TITLE_MARK, mark != null && TITLE_MARK_FILLED)}>{mark}</span>
       {children}
     </>
   );

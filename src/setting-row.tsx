@@ -55,19 +55,13 @@ export function SettingRow({
 }: SettingRowProps) {
   return (
     <div
-      className={cn(
-        "flex gap-4 px-5 py-3.5",
-        alignTop ? "items-start" : "items-center",
-        className,
-      )}
+      className={cn("flex gap-4 px-5 py-3.5", alignTop ? "items-start" : "items-center", className)}
       {...props}
     >
       {leading ? <div className="flex flex-none">{leading}</div> : null}
       <div className="min-w-0 flex-1">
         <div className="text-sm font-semibold text-gousse-ink">{title}</div>
-        {description ? (
-          <div className="mt-0.5 text-xs text-gousse-muted">{description}</div>
-        ) : null}
+        {description ? <div className="mt-0.5 text-xs text-gousse-muted">{description}</div> : null}
         {children}
       </div>
       {control ? <div className="flex flex-none items-center gap-2">{control}</div> : null}

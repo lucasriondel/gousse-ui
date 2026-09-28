@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "react", "import", "jsx-a11y"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "env": { "browser": true, "es2022": true },
+  "rules": {
+    // React 19 uses the automatic JSX runtime; `React` never needs to be in scope.
+    "react/react-in-jsx-scope": "off",
+    // Both miss content forwarded through `{...props}` — the Base UI `render`
+    // prop pattern (`render={(p) => <a {...p} />}`) and wrappers like TopBarTitle.
+    "jsx-a11y/anchor-has-content": "off",
+    "jsx-a11y/heading-has-content": "off",
+    // `<output>` is a form-associated element; `role="status"` on a span is the
+    // standard live-region idiom for Spinner.
+    "jsx-a11y/prefer-tag-over-role": "off",
+    // Checkbox is a custom control; a wrapping <label> is a valid association.
+    "jsx-a11y/label-has-associated-control": ["error", { "controlComponents": ["Checkbox"] }],
+    // Side-effect imports of stylesheets are how CSS gets wired in.
+    "import/no-unassigned-import": ["warn", { "allow": ["**/*.css"] }],
+    // `lib` is ES2022, so `toSorted()` isn't available; sorts run on spread copies.
+    "unicorn/no-array-sort": "off",
+    // Flags describe-scoped test helpers and small local closures; noise here.
+    "unicorn/consistent-function-scoping": "off"
+  },
+  "overrides": [
+    {
+      // Stories autofocus deliberately to demonstrate focus-visible states.
+      "files": ["**/*.stories.tsx"],
+      "rules": { "jsx-a11y/no-autofocus": "off" }
+    }
+  ],
+  "ignorePatterns": [
+    ".claude/**",
+    ".design-sync/**",
+    ".sandcastle/**",
+    "dist/**",
+    "registry-static/**",
+    "storybook-static/**",
+    "ds-bundle/**"
+  ]
+}

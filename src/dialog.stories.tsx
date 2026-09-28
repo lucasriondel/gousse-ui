@@ -30,9 +30,7 @@ export const Default: Story = {
   args: {},
   render: () => (
     <Dialog>
-      <DialogTrigger
-        render={<Button variant="primary">Open dialog</Button>}
-      />
+      <DialogTrigger render={<Button variant="primary">Open dialog</Button>} />
       <DialogContent>
         <DialogCloseButton />
         <DialogHeader>
@@ -107,8 +105,8 @@ export const NonDismissable: Story = {
             <DialogHeader className="mt-5">
               <DialogTitle>Connect an account</DialogTitle>
               <DialogDescription>
-                Nothing works until there is an account to work on. Escape and the backdrop
-                are refused here — finish the step or stay.
+                Nothing works until there is an account to work on. Escape and the backdrop are
+                refused here — finish the step or stay.
               </DialogDescription>
             </DialogHeader>
             <div className="mt-6">
@@ -165,8 +163,8 @@ export const Scrolling: Story = {
         <div className="mt-5 flex flex-col gap-3 text-sm text-gousse-muted">
           {Array.from({ length: 20 }, (_, i) => (
             <p key={i}>
-              Entry {i + 1} — a change that was made, described at just enough length to
-              push this panel past the height of the window.
+              Entry {i + 1} — a change that was made, described at just enough length to push this
+              panel past the height of the window.
             </p>
           ))}
         </div>

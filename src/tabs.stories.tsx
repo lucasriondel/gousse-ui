@@ -176,9 +176,7 @@ export const AllVariants: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-xs font-bold uppercase tracking-wider text-gousse-muted">
-          With counts
-        </p>
+        <p className="text-xs font-bold uppercase tracking-wider text-gousse-muted">With counts</p>
         <Tabs defaultValue="a" className="w-[30rem]">
           <TabsList>
             <TabsTab value="a">
@@ -205,9 +203,7 @@ export const AllVariants: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-xs font-bold uppercase tracking-wider text-gousse-muted">
-          No indicator
-        </p>
+        <p className="text-xs font-bold uppercase tracking-wider text-gousse-muted">No indicator</p>
         <Tabs defaultValue="a" className="w-[30rem]">
           <TabsList>
             <TabsTab value="a">First</TabsTab>

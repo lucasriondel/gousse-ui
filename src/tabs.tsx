@@ -31,10 +31,7 @@ export const Tabs = TabsPrimitive.Root;
 export function TabsList({ className, ...props }: ComponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
-      className={cn(
-        "relative flex items-center gap-1 border-b border-gousse-line",
-        className,
-      )}
+      className={cn("relative flex items-center gap-1 border-b border-gousse-line", className)}
       {...props}
     />
   );

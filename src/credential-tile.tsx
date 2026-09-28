@@ -35,9 +35,7 @@ export function CredentialStatusPill({
     <span
       className={cn(
         "inline-flex flex-none items-center gap-1.5 rounded-full py-0.5 pl-1.5 pr-2 text-[11.5px] font-semibold",
-        configured
-          ? "bg-gousse-low/12 text-gousse-low"
-          : "bg-gousse-muted/12 text-gousse-muted",
+        configured ? "bg-gousse-low/12 text-gousse-low" : "bg-gousse-muted/12 text-gousse-muted",
         className,
       )}
     >
@@ -190,7 +188,5 @@ export function CredentialTile({
  * some widths and orphan the last one.
  */
 export function CredentialGrid({ className, ...props }: ComponentProps<"div">) {
-  return (
-    <div className={cn("grid grid-cols-1 gap-3 sm:grid-cols-2", className)} {...props} />
-  );
+  return <div className={cn("grid grid-cols-1 gap-3 sm:grid-cols-2", className)} {...props} />;
 }

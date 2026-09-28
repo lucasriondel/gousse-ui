@@ -41,12 +41,12 @@ Files land wherever your `components.json` aliases point — components at your
 
 ## What you're taking on
 
-| | |
-|---|---|
-| React | `^19` (peer — yours, never installed by the registry) |
-| Tailwind | `v4` (`tailwindcss@^4.3`), CSS-first config — no `tailwind.config.ts` |
-| Primitives | `@base-ui-components/react@1.0.0-rc.0` — **a release candidate**, used by Dialog, DropdownMenu and Separator |
-| Also pulled in | `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react` |
+|                |                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| React          | `^19` (peer — yours, never installed by the registry)                                                        |
+| Tailwind       | `v4` (`tailwindcss@^4.3`), CSS-first config — no `tailwind.config.ts`                                        |
+| Primitives     | `@base-ui-components/react@1.0.0-rc.0` — **a release candidate**, used by Dialog, DropdownMenu and Separator |
+| Also pulled in | `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`                                         |
 
 The Base UI pin is a prerelease. That's a real adoption consideration, not a
 footnote — components that use it may need touching when Base UI hits 1.0.
@@ -63,8 +63,8 @@ that `theme.css` maps onto Tailwind theme variables:
 
 ```css
 @import "tailwindcss";
-@import "./styles/gousse/tokens.css";  /* --gousse-* channel vars (:root/.dark) */
-@import "./styles/gousse/theme.css";   /* @theme mapping → bg-gousse-*, shadow-gousse-*, animate-* */
+@import "./styles/gousse/tokens.css"; /* --gousse-* channel vars (:root/.dark) */
+@import "./styles/gousse/theme.css"; /* @theme mapping → bg-gousse-*, shadow-gousse-*, animate-* */
 @import "./styles/gousse/effects.css"; /* RainbowGlow / Sheen — and Select */
 ```
 
@@ -94,7 +94,7 @@ Two consequences worth knowing before you restyle anything:
   — an off-centre value inside a pill reads as broken.
 - **Not everything is a pill.** `Textarea` takes `rounded-2xl`: a tall
   multi-line box with fully-round ends loses its first and last lines to the
-  corner arc. Radius therefore lives *outside* the shared `FIELD_CHROME` string
+  corner arc. Radius therefore lives _outside_ the shared `FIELD_CHROME` string
   (as `FIELD_PILL` / `FIELD_BOX`) so single- and multi-line fields can share
   chrome without sharing shape.
 
@@ -102,12 +102,12 @@ Every radius is a class on a component you now own — override it in place.
 
 ## Registry items
 
-| item | type | what it is |
-|---|---|---|
-| `avatar` `badge` `button` `checkbox` `dialog` `dropdown-menu` `empty` `input` `notice` `radio-group` `rainbow-glow` `select` `separator` `setting-row` `sheen` `sidebar` `spinner` `steps` `switch` `textarea` | `registry:ui` | the components |
-| `credential-tile` `model-row` `provider-mark` `saved-flash` `secret-field` | `registry:ui` | the AI-provider set — credential entry and model choice |
-| `utils` `field-chrome` | `registry:lib` | `cn()`, and the shared text-field chrome string |
-| `tokens` `theme` `effects` | `registry:file` | the three stylesheets |
+| item                                                                                                                                                                                                           | type            | what it is                                              |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ------------------------------------------------------- |
+| `avatar` `badge` `button` `checkbox` `dialog` `dropdown-menu` `empty` `input` `notice` `radio-group` `rainbow-glow` `select` `separator` `setting-row` `sheen` `sidebar` `spinner` `steps` `switch` `textarea` | `registry:ui`   | the components                                          |
+| `credential-tile` `model-row` `provider-mark` `saved-flash` `secret-field`                                                                                                                                     | `registry:ui`   | the AI-provider set — credential entry and model choice |
+| `utils` `field-chrome`                                                                                                                                                                                         | `registry:lib`  | `cn()`, and the shared text-field chrome string         |
+| `tokens` `theme` `effects`                                                                                                                                                                                     | `registry:file` | the three stylesheets                                   |
 
 Full index: [`registry.json`](https://lucasriondel.github.io/gousse-ui/registry.json).
 

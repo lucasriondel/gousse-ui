@@ -1,14 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Inbox,
-  Send,
-  Archive,
-  Tag,
-  ChevronDown,
-  ScrollText,
-  Settings,
-} from "lucide-react";
+import { Inbox, Send, Archive, Tag, ChevronDown, ScrollText, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarShell,
@@ -47,9 +39,7 @@ const HUE = {
 /** The brand mark as a consumer ships it: an `<img>` filling the 26px slot —
  * the slot's own radius clips it. Served from `.storybook/public`;
  * harness-only, not part of any registry item. */
-const Mark = () => (
-  <img src="gousse-mark.png" alt="" className="h-full w-full object-cover" />
-);
+const Mark = () => <img src="gousse-mark.png" alt="" className="h-full w-full object-cover" />;
 
 const Brand = () => <SidebarTitle mark={<Mark />}>gousse</SidebarTitle>;
 
@@ -260,8 +250,8 @@ export const MarkEnterLeave: Story = {
             </SidebarFooter>
           </Sidebar>
           <div className="flex-1 p-6 text-sm text-gousse-muted">
-            Click a row — its stroke fades in as the old one fades out, each in
-            its own row's hue. Footer rows carry one the same way.
+            Click a row — its stroke fades in as the old one fades out, each in its own row's hue.
+            Footer rows carry one the same way.
           </div>
         </div>
       );
@@ -369,11 +359,7 @@ export const MarkInScrollRegion: Story = {
           <SidebarGroup>
             <SidebarGroupLabel>Many rows</SidebarGroupLabel>
             {Array.from({ length: 24 }, (_, i) => (
-              <SidebarItem
-                key={i}
-                active={i === 11}
-                icon={<Tag aria-hidden className={ICON} />}
-              >
+              <SidebarItem key={i} active={i === 11} icon={<Tag aria-hidden className={ICON} />}>
                 <span className="truncate">Label {i + 1}</span>
               </SidebarItem>
             ))}
@@ -514,10 +500,7 @@ export const AllVariants: Story = {
             <SidebarItem icon={<Inbox aria-hidden className={ICON} />}>
               <span className="truncate">Rest</span>
             </SidebarItem>
-            <SidebarItem
-              icon={<Inbox aria-hidden className={ICON} />}
-              trailing={<Count n={3} />}
-            >
+            <SidebarItem icon={<Inbox aria-hidden className={ICON} />} trailing={<Count n={3} />}>
               <span className="truncate">With count</span>
             </SidebarItem>
             <SidebarItem disabled icon={<Inbox aria-hidden className={ICON} />}>

@@ -59,10 +59,7 @@ export const Interactive: Story = {
       return (
         <div className="flex items-center gap-3">
           <span className="font-mono text-xs text-gousse-ink">{stored}</span>
-          <button
-            className="text-xs text-gousse-muted underline"
-            onClick={() => setStored(null)}
-          >
+          <button className="text-xs text-gousse-muted underline" onClick={() => setStored(null)}>
             reset
           </button>
         </div>

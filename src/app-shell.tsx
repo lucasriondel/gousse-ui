@@ -81,6 +81,7 @@ function useScrolled(node: HTMLElement | null): boolean {
 
   useEffect(() => {
     if (!node) {
+      // oxlint-disable-next-line react/set-state-in-effect -- resets the subscription's state when the scroll node unbinds
       setScrolled(false);
       return;
     }
@@ -248,10 +249,7 @@ export function TopBarEnd({ className, ...props }: ComponentProps<"div">) {
  */
 export function AppContent({ className, ...props }: ComponentProps<"div">) {
   return (
-    <div
-      className={cn("min-h-0 flex-1 overflow-y-auto py-6", SHELL_INSET, className)}
-      {...props}
-    />
+    <div className={cn("min-h-0 flex-1 overflow-y-auto py-6", SHELL_INSET, className)} {...props} />
   );
 }
 

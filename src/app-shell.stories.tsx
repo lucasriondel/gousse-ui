@@ -1,7 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { ArrowLeft, Bell, Inbox, Plus, Receipt, Search, Settings, Trash2, Wallet } from "lucide-react";
+import {
+  ArrowLeft,
+  Bell,
+  Inbox,
+  Plus,
+  Receipt,
+  Search,
+  Settings,
+  Trash2,
+  Wallet,
+} from "lucide-react";
 import {
   AppShell,
   AppMain,

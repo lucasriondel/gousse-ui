@@ -51,9 +51,7 @@ export const WithControl: Story = {
       <Card>
         <SettingRow
           {...args}
-          control={
-            <Switch aria-label="Weekly digest" checked={on} onCheckedChange={setOn} />
-          }
+          control={<Switch aria-label="Weekly digest" checked={on} onCheckedChange={setOn} />}
         />
       </Card>
     );
@@ -151,7 +149,9 @@ export const Stacked: Story = {
           }
           title="Weekly digest"
           description="A Monday summary of everything triaged last week."
-          control={<Switch aria-label="Weekly digest" checked={digest} onCheckedChange={setDigest} />}
+          control={
+            <Switch aria-label="Weekly digest" checked={digest} onCheckedChange={setDigest} />
+          }
         />
         <SettingRow
           leading={
@@ -182,7 +182,9 @@ export const Stacked: Story = {
         <SettingRow
           title="Instant alerts"
           description="A push the moment something urgent lands."
-          control={<Switch aria-label="Instant alerts" checked={alerts} onCheckedChange={setAlerts} />}
+          control={
+            <Switch aria-label="Instant alerts" checked={alerts} onCheckedChange={setAlerts} />
+          }
         />
       </Card>
     );

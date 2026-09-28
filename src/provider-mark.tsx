@@ -38,7 +38,10 @@ const MARKS: Record<string, ReactNode> = {
         fill="#34A853"
         d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0012 23z"
       />
-      <path fill="#FBBC05" d="M5.84 14.11a6.6 6.6 0 010-4.22V7.05H2.18a11 11 0 000 9.9l3.66-2.84z" />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.11a6.6 6.6 0 010-4.22V7.05H2.18a11 11 0 000 9.9l3.66-2.84z"
+      />
       <path
         fill="#EA4335"
         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 00-9.82 6.05l3.66 2.84c.87-2.6 3.3-4.51 6.16-4.51z"
@@ -76,13 +79,7 @@ interface ProviderMarkProps extends Omit<ComponentProps<"span">, "title"> {
   icon?: ReactNode;
 }
 
-export function ProviderMark({
-  provider,
-  label,
-  icon,
-  className,
-  ...props
-}: ProviderMarkProps) {
+export function ProviderMark({ provider, label, icon, className, ...props }: ProviderMarkProps) {
   const known = MARKS[provider];
 
   return (

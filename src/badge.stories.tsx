@@ -9,14 +9,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "inline-radio",
-      options: [
-        "neutral",
-        "colored",
-        "system",
-        "suggested",
-        "suggestedNew",
-        "action",
-      ],
+      options: ["neutral", "colored", "system", "suggested", "suggestedNew", "action"],
     },
     interactive: { control: "boolean" },
   },

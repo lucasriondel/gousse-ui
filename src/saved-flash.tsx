@@ -54,10 +54,7 @@ export function SavedFlash({
     return (
       <span
         aria-live="polite"
-        className={cn(
-          "flex items-center gap-1 text-xs font-medium text-gousse-low",
-          className,
-        )}
+        className={cn("flex items-center gap-1 text-xs font-medium text-gousse-low", className)}
       >
         <Check size={13} strokeWidth={3} aria-hidden /> {savedLabel}
       </span>

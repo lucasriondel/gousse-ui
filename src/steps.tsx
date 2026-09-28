@@ -37,8 +37,7 @@ const MARKER_BASE =
   "flex size-5 flex-none items-center justify-center rounded-full text-[11px] transition-colors duration-200";
 
 export function Steps({ steps, current, labels = true, className, ...props }: StepsProps) {
-  const at =
-    typeof current === "number" ? current : steps.findIndex((step) => step.id === current);
+  const at = typeof current === "number" ? current : steps.findIndex((step) => step.id === current);
 
   return (
     <ol

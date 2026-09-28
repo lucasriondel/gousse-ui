@@ -214,7 +214,10 @@ export function npmPackageName(spec: string): string {
 /** `@/lib/utils` / `@/components/ui/button` -> the registry item they name. */
 export function itemNameFromAliasImport(spec: string): string | null {
   if (!spec.startsWith("@/")) return null;
-  return spec.split("/").pop()!.replace(/\.(tsx?|css)$/, "");
+  return spec
+    .split("/")
+    .pop()!
+    .replace(/\.(tsx?|css)$/, "");
 }
 
 function docSentence(body: string): string | undefined {
@@ -311,7 +314,11 @@ function cssSubjectClasses(css: string): string[] {
     const prelude = rule[1]!.trim();
     if (!prelude || prelude.startsWith("@")) continue;
     for (const selector of prelude.split(",")) {
-      const subject = selector.trim().split(/\s*[>+~]\s*|\s+/).filter(Boolean).pop();
+      const subject = selector
+        .trim()
+        .split(/\s*[>+~]\s*|\s+/)
+        .filter(Boolean)
+        .pop();
       if (!subject) continue;
       for (const cls of subject.matchAll(/\.(-?[A-Za-z_][\w-]*)/g)) names.add(cls[1]!);
     }
@@ -461,7 +468,9 @@ export function buildRegistry(options: BuildOptions = {}): {
           }
           const alias = aliasImport(sibling);
           if (!alias) {
-            problems.push(`${source.file}: "${spec}" points at a stylesheet, which cannot be imported from TS`);
+            problems.push(
+              `${source.file}: "${spec}" points at a stylesheet, which cannot be imported from TS`,
+            );
             continue;
           }
           // Installed files land in the consumer's own tree, so siblings are
@@ -475,7 +484,9 @@ export function buildRegistry(options: BuildOptions = {}): {
         if (packageName in PEER_DEPENDENCIES) continue;
         const version = NPM_VERSIONS[packageName];
         if (!version) {
-          problems.push(`${source.file}: "${spec}" is neither a peer nor a package.json dependency`);
+          problems.push(
+            `${source.file}: "${spec}" is neither a peer nor a package.json dependency`,
+          );
           continue;
         }
         deps.add(`${packageName}@${version}`);
@@ -533,9 +544,7 @@ export function buildRegistry(options: BuildOptions = {}): {
       description: description ?? `${titleCase(source.name)} — a gousse-ui primitive.`,
       author: AUTHOR,
       ...(deps.size ? { dependencies: [...deps].sort() } : {}),
-      ...(registryDeps.size
-        ? { registryDependencies: [...registryDeps].sort().map(itemUrl) }
-        : {}),
+      ...(registryDeps.size ? { registryDependencies: [...registryDeps].sort().map(itemUrl) } : {}),
       files,
       ...(source.kind === "css"
         ? {
@@ -683,7 +692,5 @@ export function writeRegistry(outDir: string = OUT_DIR, baseUrl?: string): Regis
 
 if (import.meta.main) {
   const index = writeRegistry();
-  console.log(
-    `registry: ${index.items.length} items -> ${OUT_DIR} (homepage ${index.homepage})`,
-  );
+  console.log(`registry: ${index.items.length} items -> ${OUT_DIR} (homepage ${index.homepage})`);
 }

@@ -176,8 +176,8 @@ export const Grid: Story = {
           ))}
         </CredentialGrid>
         <p className="px-1 text-xs text-gousse-muted">
-          Each credential is sent once and stored encrypted on the server. It is never shown
-          again — only the first characters and the last three.
+          Each credential is sent once and stored encrypted on the server. It is never shown again —
+          only the first characters and the last three.
         </p>
       </div>
     );

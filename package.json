@@ -2,13 +2,16 @@
   "name": "@lucasriondel/gousse-ui",
   "version": "0.4.1",
   "private": true,
-  "type": "module",
   "description": "Gousse design-system primitives (React 19 + Tailwind v4) — distributed as a shadcn registry.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lucasriondel/gousse-ui.git"
   },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -24,9 +27,6 @@
     "./theme.css": "./dist/theme.css",
     "./effects.css": "./dist/effects.css"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "rm -rf dist && tsc && bun run copy-css",
     "copy-css": "cp src/tokens.css src/theme.css src/effects.css dist/",
@@ -36,7 +36,9 @@
     "build-storybook": "storybook build",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
     "test": "bun test",
-    "lint": "echo 'no lint configured'",
+    "lint": "oxlint --deny-warnings",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "sandcastle": "bun .sandcastle/main.ts",
     "sandcastle:implement": "bun .sandcastle/implement/index.ts",
     "sandcastle:implement-review": "bun .sandcastle/implement-review/index.ts"
@@ -48,10 +50,6 @@
     "lucide-react": "^1.16.0",
     "tailwind-merge": "^3.6.0"
   },
-  "peerDependencies": {
-    "react": "^19",
-    "react-dom": "^19"
-  },
   "devDependencies": {
     "@ai-hero/sandcastle": "^0.12.0",
     "@storybook/addon-themes": "^10",
@@ -61,10 +59,16 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
     "storybook": "^10",
     "tailwindcss": "^4.3.0",
     "typescript": "^5.7.0",
     "vite": "^6",
     "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
   }
 }

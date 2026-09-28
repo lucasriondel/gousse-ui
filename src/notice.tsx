@@ -44,9 +44,7 @@ const ICONS = {
 
 export type NoticeVariant = keyof typeof ICONS;
 
-interface NoticeProps
-  extends Omit<ComponentProps<"div">, "children">,
-    VariantProps<typeof notice> {
+interface NoticeProps extends Omit<ComponentProps<"div">, "children">, VariantProps<typeof notice> {
   /**
    * Replaces the variant's default lucide glyph. Pass `null` for a text-only
    * notice — the gap collapses, so no empty column is left behind.

@@ -20,10 +20,7 @@ import { cn } from "./utils.js";
  */
 export function Select({ className, children, ...props }: ComponentProps<"select">) {
   return (
-    <select
-      className={cn(FIELD_CHROME, FIELD_PILL, "gousse-select", className)}
-      {...props}
-    >
+    <select className={cn(FIELD_CHROME, FIELD_PILL, "gousse-select", className)} {...props}>
       {children}
     </select>
   );

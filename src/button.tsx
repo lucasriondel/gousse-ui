@@ -53,9 +53,7 @@ const button = cva(
   },
 );
 
-interface Props
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof button> {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof button> {
   children: ReactNode;
 }
 

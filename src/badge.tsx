@@ -21,36 +21,30 @@ import { cn } from "./utils.js";
  * `interactive` adds the press feel (`active:scale-[0.96]`) shared by the
  * clickable variants; the wrappers pass it when they render a <button>.
  */
-const badge = cva(
-  "inline-flex items-center rounded-full text-xs font-bold",
-  {
-    variants: {
-      variant: {
-        neutral:
-          "gap-1.5 bg-gousse-line/50 px-2 py-0.5 text-gousse-muted shadow-gousse-sm hover:bg-gousse-line/70 sm:px-2.5 sm:py-1",
-        colored: "gap-1.5 px-2 py-0.5 shadow-gousse-sm sm:px-2.5 sm:py-1",
-        system:
-          "gap-1.5 px-2 py-0.5 shadow-gousse-sm sm:px-2.5 sm:py-1",
-        suggested:
-          "gap-1.5 border border-dashed border-gousse-line bg-gousse-panel px-2 py-0.5 text-gousse-muted shadow-gousse-sm sm:px-2.5 sm:py-1",
-        suggestedNew:
-          "gap-1.5 border border-gousse-accent/50 bg-gousse-accent/15 px-2 py-0.5 text-gousse-accent shadow-gousse-sm sm:px-2.5 sm:py-1",
-        action: "px-2.5 py-1 font-semibold",
-      },
-      interactive: {
-        true: "transition-all active:scale-[0.96]",
-        false: "",
-      },
+const badge = cva("inline-flex items-center rounded-full text-xs font-bold", {
+  variants: {
+    variant: {
+      neutral:
+        "gap-1.5 bg-gousse-line/50 px-2 py-0.5 text-gousse-muted shadow-gousse-sm hover:bg-gousse-line/70 sm:px-2.5 sm:py-1",
+      colored: "gap-1.5 px-2 py-0.5 shadow-gousse-sm sm:px-2.5 sm:py-1",
+      system: "gap-1.5 px-2 py-0.5 shadow-gousse-sm sm:px-2.5 sm:py-1",
+      suggested:
+        "gap-1.5 border border-dashed border-gousse-line bg-gousse-panel px-2 py-0.5 text-gousse-muted shadow-gousse-sm sm:px-2.5 sm:py-1",
+      suggestedNew:
+        "gap-1.5 border border-gousse-accent/50 bg-gousse-accent/15 px-2 py-0.5 text-gousse-accent shadow-gousse-sm sm:px-2.5 sm:py-1",
+      action: "px-2.5 py-1 font-semibold",
     },
-    // The old colored LabelBadge animated only `transition-transform` (no hover
-    // color to tween), unlike the neutral/suggested pills which used
-    // `transition-all`. Preserve that exactly — twMerge lets this later class win.
-    compoundVariants: [
-      { variant: "colored", interactive: true, class: "transition-transform" },
-    ],
-    defaultVariants: { variant: "neutral", interactive: false },
+    interactive: {
+      true: "transition-all active:scale-[0.96]",
+      false: "",
+    },
   },
-);
+  // The old colored LabelBadge animated only `transition-transform` (no hover
+  // color to tween), unlike the neutral/suggested pills which used
+  // `transition-all`. Preserve that exactly — twMerge lets this later class win.
+  compoundVariants: [{ variant: "colored", interactive: true, class: "transition-transform" }],
+  defaultVariants: { variant: "neutral", interactive: false },
+});
 
 export type BadgeVariant = NonNullable<VariantProps<typeof badge>["variant"]>;
 
@@ -79,9 +73,6 @@ export function Badge({
 
 /** Class string for consumers that need to style their own element (e.g. a
  *  <button> for a removable/clickable badge) with the badge chassis. */
-export function badgeClasses(
-  opts: VariantProps<typeof badge>,
-  className?: string,
-): string {
+export function badgeClasses(opts: VariantProps<typeof badge>, className?: string): string {
   return cn(badge(opts), className);
 }

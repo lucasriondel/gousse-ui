@@ -10,9 +10,9 @@ const config: StorybookConfig = {
     options: {},
   },
   core: { disableTelemetry: true },
-  viteFinal: async (config) => {
-    config.plugins = [...(config.plugins ?? []), tailwindcss()];
-    return config;
+  viteFinal: async (viteConfig) => {
+    viteConfig.plugins = [...(viteConfig.plugins ?? []), tailwindcss()];
+    return viteConfig;
   },
 };
 

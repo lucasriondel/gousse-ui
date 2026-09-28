@@ -56,9 +56,7 @@ describe("dist ESM resolution", () => {
   });
 
   test("every relative specifier in dist resolves the way Node would", () => {
-    const emitted = walk(DIST).filter(
-      (f) => f.endsWith(".js") || f.endsWith(".d.ts"),
-    );
+    const emitted = walk(DIST).filter((f) => f.endsWith(".js") || f.endsWith(".d.ts"));
     expect(emitted.length).toBeGreaterThan(0);
 
     const unresolvable: string[] = [];

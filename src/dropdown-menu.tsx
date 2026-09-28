@@ -53,10 +53,7 @@ export function DropdownMenuContent({
   );
 }
 
-export function DropdownMenuItem({
-  className,
-  ...props
-}: ComponentProps<typeof Menu.Item>) {
+export function DropdownMenuItem({ className, ...props }: ComponentProps<typeof Menu.Item>) {
   return <Menu.Item className={cn(ITEM_BASE, className)} {...props} />;
 }
 
@@ -75,10 +72,7 @@ export function DropdownMenuSubTrigger({
       {...props}
     >
       {children}
-      <ChevronRight
-        className="ml-auto h-3.5 w-3.5 shrink-0 text-gousse-muted"
-        aria-hidden
-      />
+      <ChevronRight className="ml-auto h-3.5 w-3.5 shrink-0 text-gousse-muted" aria-hidden />
     </Menu.SubmenuTrigger>
   );
 }
@@ -101,12 +95,7 @@ export function DropdownMenuSeparator({
   className,
   ...props
 }: ComponentProps<typeof Menu.Separator>) {
-  return (
-    <Menu.Separator
-      className={cn("-mx-1 my-1 h-px bg-gousse-line", className)}
-      {...props}
-    />
-  );
+  return <Menu.Separator className={cn("-mx-1 my-1 h-px bg-gousse-line", className)} {...props} />;
 }
 
 /**
@@ -114,10 +103,7 @@ export function DropdownMenuSeparator({
  * so it can sit at the top of the popup without an enclosing `Menu.Group`
  * (Base UI throws if a GroupLabel has no MenuGroupRootContext).
  */
-export function DropdownMenuLabel({
-  className,
-  ...props
-}: ComponentProps<"div">) {
+export function DropdownMenuLabel({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
