@@ -10,3 +10,4 @@ registry-static/
 .ds-sync/
 ds-bundle/
 logs/
+.sandcastle/
