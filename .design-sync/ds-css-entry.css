@@ -1,0 +1,48 @@
+/* design-sync CSS entry — NOT part of the shipped library.
+ *
+ * Why this file exists: the converter's default CSS path for this repo is
+ * [CSS_FROM_STORYBOOK], which scrapes the compiled stylesheet out of the
+ * reference storybook build. That output is Tailwind's content-scanned result
+ * for the STORIES ONLY — ~317 classes. Utilities the stories happen not to use
+ * (bg-gousse-muted, every border-gousse-* except line, all ring-gousse-*,
+ * 5 of the 7 animate-* keyframes, shadow-gousse-lg) are simply absent.
+ *
+ * That is fine for rendering the components themselves, but claude.ai/design's
+ * agent writes its own layout glue with these utilities. Anything outside the
+ * scanned set would silently render unstyled. So we compile the design system's
+ * real sheets plus an explicit safelist of the full gousse-* matrix.
+ *
+ * Keep the @source inline() list in sync with theme.css's @theme block. */
+
+/* These are exactly the sheets .storybook/preview.css imports — no more.
+ * Do NOT add src/sidebar-chrome.css here: nothing in the library or the
+ * storybook harness imports it, so adding it paints active-row/hue styling
+ * that the real components never show (verified — it made Sidebar's Inbox,
+ * Settings and hued rows render highlighted against a plain reference). */
+@import "tailwindcss";
+@import "../src/tokens.css";
+@import "../src/theme.css";
+@import "../src/effects.css";
+
+/* The complete gousse-* utility surface, forced into the build so every token
+ * documented in conventions.md actually resolves for generated designs. */
+@source inline("{bg,text,border,ring,fill,stroke,divide,outline,decoration,shadow,accent,caret}-gousse-{bg,panel,ink,muted,line,accent,high,medium,low}");
+@source inline("{bg,text,border,ring}-gousse-{bg,panel,ink,muted,line,accent,high,medium,low}/{5,10,15,20,25,30,40,50,60,70,75,80,90,95}");
+@source inline("hover:{bg,text,border}-gousse-{bg,panel,ink,muted,line,accent,high,medium,low}");
+@source inline("focus:{bg,text,border,ring}-gousse-{ink,line,accent}");
+@source inline("focus-visible:{ring,border,outline}-gousse-{ink,line,accent}");
+@source inline("dark:{bg,text,border}-gousse-{bg,panel,ink,muted,line,accent,high,medium,low}");
+
+/* Shadows and animations declared by theme.css. */
+@source inline("shadow-gousse-{sm,md,lg,xl}");
+@source inline("animate-{fade-in,slide-up,slide-out,slide-in-right,bounce-subtle,sparkle-twinkle,spin}");
+
+/* The radius vocabulary the conventions header teaches (pill controls,
+ * rounded-2xl surfaces). */
+@source inline("rounded-{none,sm,md,lg,xl,2xl,3xl,full}");
+
+body {
+  @apply bg-gousse-bg text-gousse-ink font-sans antialiased;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,16 @@
+{
+  "projectId": "fb24fcbf-69d0-4db8-893f-91e325ced0b5",
+  "shape": "storybook",
+  "pkg": "@lucasriondel/gousse-ui",
+  "globalName": "GousseUI",
+  "storybookConfigDir": ".storybook",
+  "storybookStatic": ".design-sync/sb-reference",
+  "buildCmd": "bun run build",
+  "cssEntry": ".design-sync/.cache/ds-styles.css",
+  "readmeHeader": ".design-sync/conventions.md",
+  "overrides": {
+    "Empty": { "cardMode": "column" },
+    "Select": { "cardMode": "column" },
+    "Textarea": { "cardMode": "column" }
+  }
+}
