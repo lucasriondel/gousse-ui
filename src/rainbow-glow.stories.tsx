@@ -58,3 +58,50 @@ export const Card: Story = {
     </div>
   ),
 };
+
+/**
+ * Tall card — the case that used to break. The halo's rotating square is sized
+ * off the host's larger side, so a long list is lit edge to edge instead of
+ * only across a band in the middle.
+ */
+export const TallCard: Story = {
+  args: { variant: "card", trigger: "always" },
+  parameters: { layout: "padded" },
+  render: (args) => (
+    <div className="relative w-[560px] rounded-md">
+      <RainbowGlow {...args} className="!rounded-[9px]" />
+      <div className="relative z-[1] overflow-hidden rounded-md border border-gousse-line bg-gousse-panel">
+        {Array.from({ length: 40 }, (_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 border-b border-gousse-line px-4 py-3 last:border-b-0"
+          >
+            <span className="w-40 shrink-0 truncate text-sm font-bold text-gousse-ink">
+              Sender {i + 1}
+            </span>
+            <span className="truncate text-sm text-gousse-muted">
+              A subject line long enough to fill the row
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * Wide card — the mirror of `TallCard`. Sizing off the larger side must not
+ * leave a short, very wide host under-covered either.
+ */
+export const WideCard: Story = {
+  args: { variant: "card", trigger: "always" },
+  parameters: { layout: "padded" },
+  render: (args) => (
+    <div className="relative w-[900px] rounded-md">
+      <RainbowGlow {...args} className="!rounded-[9px]" />
+      <div className="relative z-[1] rounded-md border border-gousse-line bg-gousse-panel px-5 py-4">
+        <p className="text-sm font-bold text-gousse-ink">One wide row</p>
+      </div>
+    </div>
+  ),
+};
