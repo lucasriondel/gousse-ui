@@ -1,0 +1,279 @@
+/* ============================================================
+   AGENT MOTION — the animated parts of the agent components
+   (ThinkingState, Orb, AudioWaves, StreamingText,
+   ImageGeneration) that Tailwind can't express cleanly:
+   gradient-clipped shimmer text, phased dot matrices, staggered
+   bars.
+
+   Companion sheet, imported after theme.css. Every colour is a
+   `--gousse-*` token, so the motion re-tints with the theme.
+   Every animation has a reduced-motion fallback that keeps the
+   state legible without the movement.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   SHIMMER — a light band that sweeps across muted text. The
+   label a thinking agent shows: "Thinking…" reads as alive
+   without a spinner competing with it.
+   ------------------------------------------------------------ */
+.gousse-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    rgb(var(--gousse-muted)) 0%,
+    rgb(var(--gousse-muted)) 40%,
+    rgb(var(--gousse-ink)) 50%,
+    rgb(var(--gousse-muted)) 60%,
+    rgb(var(--gousse-muted)) 100%
+  );
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gousseShimmer 2s linear infinite;
+}
+@keyframes gousseShimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
+/* ------------------------------------------------------------
+   CARET — the block cursor at the tail of streaming text.
+   ------------------------------------------------------------ */
+.gousse-caret {
+  display: inline-block;
+  width: 0.5em;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  border-radius: 2px;
+  background: rgb(var(--gousse-ink));
+  animation: gousseCaret 1s steps(1) infinite;
+}
+@keyframes gousseCaret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Each freshly streamed chunk fades up from blur. */
+.gousse-stream-chunk {
+  animation: gousseStreamIn 420ms ease-out both;
+}
+@keyframes gousseStreamIn {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* ------------------------------------------------------------
+   WAVES — one bar per element; the stagger comes from an inline
+   `--i` index, the amplitude from `--peak` (0–1). The host sets
+   `data-state="idle"` to settle every bar to its floor.
+   ------------------------------------------------------------ */
+.gousse-wave-bar,
+.gousse-wave-dot,
+.gousse-wave-ring {
+  /* Defaults; the component sets both inline per bar. */
+  --i: 0;
+  --peak: 1;
+}
+.gousse-wave-bar {
+  /* No transform-origin here: this sheet is unlayered, so it would
+     beat the component's `origin-bottom` utility. */
+  animation: gousseWaveBar 1.1s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -90ms);
+}
+@keyframes gousseWaveBar {
+  0%,
+  100% {
+    transform: scaleY(0.2);
+  }
+  50% {
+    transform: scaleY(var(--peak, 1));
+  }
+}
+.gousse-wave-dot {
+  animation: gousseWaveDot 1.2s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -120ms);
+}
+@keyframes gousseWaveDot {
+  0%,
+  100% {
+    transform: translateY(35%);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(-35%);
+    opacity: 1;
+  }
+}
+.gousse-wave-ring {
+  animation: gousseWaveRing 2.4s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  animation-delay: calc(var(--i, 0) * -800ms);
+}
+@keyframes gousseWaveRing {
+  from {
+    transform: scale(0.35);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.gousse-wave-line {
+  animation: gousseWaveLine 1.6s linear infinite;
+}
+@keyframes gousseWaveLine {
+  to {
+    transform: translateX(-50%);
+  }
+}
+[data-state="idle"] > .gousse-wave-bar,
+[data-state="idle"] > .gousse-wave-dot,
+[data-state="idle"] > .gousse-wave-ring,
+[data-state="idle"] .gousse-wave-line {
+  animation-play-state: paused;
+}
+[data-state="idle"] > .gousse-wave-bar {
+  animation: none;
+  transform: scaleY(0.2);
+}
+/* Idle rings drop away, leaving only the centre dot. */
+[data-state="idle"] > .gousse-wave-ring {
+  animation: none;
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------
+   ORB — a small dot-matrix activity mark. The component lays the
+   dots out (a lattice, a ring, a lens stack) and gives each one a
+   phase `--p` in [0, 1); this sheet only owns *how* a dot moves.
+   The variant picks the keyframe via `data-motion` on the stage,
+   and every dot starts `--p` of the way through the cycle, so the
+   pattern (a wave, a chase, a comet) comes from the phases alone
+   and is already mid-motion on the first frame.
+   ------------------------------------------------------------ */
+.gousse-orb {
+  position: relative;
+  --orb-dur: 1.6s;
+}
+.gousse-orb-dot {
+  --p: 0;
+  position: absolute;
+  border-radius: 9999px;
+  background: currentColor;
+  translate: -50% -50%;
+  opacity: 0.2;
+  animation: var(--orb-motion, gousseOrbFade) var(--orb-dur) ease-in-out infinite;
+  animation-delay: calc(var(--p, 0) * var(--orb-dur) * -1);
+}
+.gousse-orb[data-motion="fade"] { --orb-motion: gousseOrbFade; }
+.gousse-orb[data-motion="pulse"] { --orb-motion: gousseOrbPulse; }
+.gousse-orb[data-motion="comet"] { --orb-motion: gousseOrbComet; }
+.gousse-orb[data-motion="bloom"] { --orb-motion: gousseOrbBloom; }
+.gousse-orb[data-motion="focus"] { --orb-motion: gousseOrbFocus; }
+.gousse-orb[data-motion="comet"] .gousse-orb-dot { animation-timing-function: linear; }
+
+/* The whole stage turning — ring and morph variants layer this
+   over the per-dot motion. */
+.gousse-orb[data-spin] {
+  animation: gousseOrbSpin calc(var(--orb-dur) * 2.5) linear infinite;
+}
+.gousse-orb[data-spin="breathe"] {
+  animation: gousseOrbSpinBreathe calc(var(--orb-dur) * 2) ease-in-out infinite;
+}
+
+@keyframes gousseOrbFade {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+@keyframes gousseOrbPulse {
+  0%, 100% { opacity: 0.3; scale: 0.45; }
+  50% { opacity: 1; scale: 1.25; }
+}
+@keyframes gousseOrbComet {
+  0% { opacity: 1; scale: 1.15; }
+  45% { opacity: 0.35; scale: 0.8; }
+  100% { opacity: 0.15; scale: 0.7; }
+}
+@keyframes gousseOrbBloom {
+  0% { opacity: 0; scale: 0.2; }
+  30% { opacity: 1; }
+  100% { opacity: 0; scale: 2.4; }
+}
+/* Depth by blur: a dot in focus is sharp and full, one out of it
+   is soft and faint — the "lens" family. */
+@keyframes gousseOrbFocus {
+  0%, 100% { opacity: 0.3; scale: 0.8; filter: blur(1.2px); }
+  50% { opacity: 1; scale: 1.2; filter: blur(0); }
+}
+@keyframes gousseOrbSpin {
+  to { rotate: 360deg; }
+}
+@keyframes gousseOrbSpinBreathe {
+  0%, 100% { rotate: 0deg; scale: 1; }
+  50% { rotate: 180deg; scale: 0.7; }
+}
+
+/* ------------------------------------------------------------
+   SCAN — the band that sweeps a generating image, over a noisy
+   placeholder that slowly resolves.
+   ------------------------------------------------------------ */
+.gousse-scan {
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgb(var(--gousse-panel) / 0.55),
+    transparent
+  );
+  animation: gousseScan 2.2s ease-in-out infinite;
+}
+@keyframes gousseScan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gousse-shimmer,
+  .gousse-stream-chunk,
+  .gousse-scan {
+    animation: none;
+  }
+  .gousse-shimmer {
+    color: rgb(var(--gousse-muted));
+  }
+  .gousse-caret {
+    animation: none;
+  }
+  .gousse-wave-bar,
+  .gousse-wave-dot,
+  .gousse-wave-ring,
+  .gousse-wave-line {
+    animation-duration: 6s;
+  }
+  /* A static frame: the phases still shade the dots, so the
+     pattern reads as a still of its motion. */
+  .gousse-orb,
+  .gousse-orb-dot {
+    animation-play-state: paused;
+  }
+}
