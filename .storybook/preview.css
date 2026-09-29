@@ -11,6 +11,9 @@
    flat: no hue fill, no left active bar, no glyph tint. Imported after
    theme.css, as a consumer installing the `sidebar` registry item would. */
 @import "../src/sidebar-chrome.css";
+/* Companion sheet to the agent components (Orb, AudioWaves, ThinkingState,
+   StreamingText, ImageGeneration) — shimmer, caret, waves, orb drift. */
+@import "../src/agent-motion.css";
 
 body {
   @apply bg-gousse-bg text-gousse-ink font-sans antialiased;

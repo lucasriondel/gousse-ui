@@ -20,13 +20,13 @@ export const DropdownMenuGroup = Menu.Group;
 export const DropdownMenuSub = Menu.SubmenuRoot;
 
 /** Enter/exit animation keyed off Base UI's data-open/closed + starting/ending. */
-const POPUP_ANIM =
+export const POPUP_ANIM =
   "origin-[var(--transform-origin)] transition-[opacity,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] " +
   "data-[starting-style]:scale-95 data-[starting-style]:opacity-0 " +
   "data-[ending-style]:scale-95 data-[ending-style]:opacity-0 " +
   "motion-reduce:transition-none motion-reduce:data-[starting-style]:scale-100";
 
-const POPUP_SURFACE =
+export const POPUP_SURFACE =
   "z-[70] min-w-[10rem] max-w-[min(15rem,calc(100vw-2rem))] rounded-2xl border border-gousse-line bg-gousse-panel p-2 shadow-gousse-xl outline-hidden";
 
 const ITEM_BASE =
