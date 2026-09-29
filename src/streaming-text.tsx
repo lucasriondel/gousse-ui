@@ -51,10 +51,7 @@ export function StreamingText({
     <div
       aria-live={streaming ? "off" : "polite"}
       aria-busy={streaming || undefined}
-      className={cn(
-        "whitespace-pre-wrap text-sm leading-relaxed text-gousse-ink",
-        className,
-      )}
+      className={cn("whitespace-pre-wrap text-sm leading-relaxed text-gousse-ink", className)}
       {...props}
     >
       {chunks.map((chunk, i) => (
@@ -73,13 +70,18 @@ export function StreamingText({
  */
 export function useSimulatedStream(
   source: string,
-  { chunk = 3, interval = 40, run = true }: { chunk?: number; interval?: number; run?: boolean } = {},
+  {
+    chunk = 3,
+    interval = 40,
+    run = true,
+  }: { chunk?: number; interval?: number; run?: boolean } = {},
 ): { text: string; streaming: boolean; restart: () => void } {
   const [length, setLength] = useState(0);
   useEffect(() => {
     if (!run || length >= source.length) return;
     const id = setTimeout(
-      () => setLength((n) => Math.min(source.length, n + chunk + Math.floor(Math.random() * chunk))),
+      () =>
+        setLength((n) => Math.min(source.length, n + chunk + Math.floor(Math.random() * chunk))),
       interval,
     );
     return () => clearTimeout(id);

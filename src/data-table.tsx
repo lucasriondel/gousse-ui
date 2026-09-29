@@ -59,11 +59,13 @@ export function DataTable<Row extends object>({
     if (!sort) return rows;
     const col = columns.find((c) => c.key === sort.key);
     if (!col) return rows;
-    const value = col.sortValue ?? ((r: Row) => (r as Record<string, unknown>)[col.key] as string | number);
+    const value =
+      col.sortValue ?? ((r: Row) => (r as Record<string, unknown>)[col.key] as string | number);
     return [...rows].sort((a, b) => {
       const x = value(a);
       const y = value(b);
-      const cmp = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y));
+      const cmp =
+        typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y));
       return sort.dir === "asc" ? cmp : -cmp;
     });
   }, [rows, columns, sort]);
@@ -139,6 +141,7 @@ export function DataTable<Row extends object>({
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-2.5">
                     <span className="block h-3 animate-pulse rounded-full bg-gousse-line/70" />
+                    <span className="sr-only">Loading</span>
                   </td>
                 ))}
               </tr>
@@ -163,7 +166,9 @@ export function DataTable<Row extends object>({
                       ALIGN[col.align ?? "left"],
                     )}
                   >
-                    {col.cell ? col.cell(row) : String((row as Record<string, unknown>)[col.key] ?? "")}
+                    {col.cell
+                      ? col.cell(row)
+                      : String((row as Record<string, unknown>)[col.key] ?? "")}
                   </td>
                 ))}
               </tr>

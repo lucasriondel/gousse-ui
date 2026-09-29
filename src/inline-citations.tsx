@@ -55,10 +55,16 @@ export function Citation({ source, className }: { source: Source; className?: st
       <PreviewCard.Portal>
         <PreviewCard.Positioner sideOffset={6} className="z-[70]">
           <PreviewCard.Popup
-            className={cn(POPUP_SURFACE, POPUP_ANIM, "flex w-64 max-w-[min(16rem,calc(100vw-2rem))] flex-col gap-1 p-3 text-left")}
+            className={cn(
+              POPUP_SURFACE,
+              POPUP_ANIM,
+              "flex w-64 max-w-[min(16rem,calc(100vw-2rem))] flex-col gap-1 p-3 text-left",
+            )}
           >
             <span className="text-xs text-gousse-muted">{hostOf(source.url)}</span>
-            <span className="text-sm font-semibold leading-snug text-gousse-ink">{source.title}</span>
+            <span className="text-sm font-semibold leading-snug text-gousse-ink">
+              {source.title}
+            </span>
             {source.snippet ? (
               <span className="line-clamp-3 text-xs leading-relaxed text-gousse-muted">
                 {source.snippet}
@@ -92,7 +98,9 @@ export function SourceList({
           >
             <span className={cn(MARKER, "mx-0 translate-y-0")}>{s.n}</span>
             <span className="min-w-0 truncate font-medium text-gousse-ink">{s.title}</span>
-            <span aria-hidden className="text-gousse-muted">·</span>
+            <span aria-hidden className="text-gousse-muted">
+              ·
+            </span>
             <span className="shrink-0 text-gousse-muted transition-colors group-hover/source:text-gousse-ink">
               {hostOf(s.url)}
             </span>
@@ -133,7 +141,11 @@ export function CitedText({
         {parts.map((part, i) => {
           const m = /^\[(\d+)\]$/.exec(part);
           const source = m ? byN.get(Number(m[1])) : undefined;
-          return source ? <Citation key={i} source={source} /> : <Fragment key={i}>{part}</Fragment>;
+          return source ? (
+            <Citation key={i} source={source} />
+          ) : (
+            <Fragment key={i}>{part}</Fragment>
+          );
         })}
       </p>
       {showSources && cited.length > 0 ? <SourceList sources={cited} /> : null}

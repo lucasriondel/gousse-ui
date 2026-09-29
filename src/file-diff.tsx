@@ -95,7 +95,10 @@ export function FileDiff({
           <ChevronRight
             size={14}
             aria-hidden
-            className={cn("shrink-0 text-gousse-muted transition-transform duration-200", open && "rotate-90")}
+            className={cn(
+              "shrink-0 text-gousse-muted transition-transform duration-200",
+              open && "rotate-90",
+            )}
           />
           <FileCode2 size={14} aria-hidden className="shrink-0 text-gousse-muted" />
           <span className="truncate font-mono text-xs text-gousse-ink">{file}</span>

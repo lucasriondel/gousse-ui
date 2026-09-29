@@ -55,9 +55,17 @@ function Questions() {
     <div className="flex flex-col gap-3">
       <QuestionCard
         questions={[
-          { id: "scope", question: "Which packages should I migrate?", options: ["All", "Only web", "Only ui"] },
+          {
+            id: "scope",
+            question: "Which packages should I migrate?",
+            options: ["All", "Only web", "Only ui"],
+          },
           { id: "tests", question: "Update snapshots if they change?", options: ["Yes", "No"] },
-          { id: "commit", question: "How should I commit?", options: ["One commit", "Per package", "Don't commit"] },
+          {
+            id: "commit",
+            question: "How should I commit?",
+            options: ["One commit", "Per package", "Don't commit"],
+          },
         ]}
         onSubmit={setAnswers}
         onSkip={noop}
@@ -95,7 +103,7 @@ export const Caution: Story = {
     risk: "caution",
     title: "Send an email",
     tool: "gmail.send",
-    description: "To team@example.com — \"Release notes for v0.5\".",
+    description: 'To team@example.com — "Release notes for v0.5".',
     children: undefined,
   },
 };
@@ -129,8 +137,20 @@ export const AllStates: Story = {
       <ApprovalCard title="Run a shell command" tool="bash" onApprove={noop} onDeny={noop}>
         {COMMAND}
       </ApprovalCard>
-      <ApprovalCard risk="caution" title="Send an email" tool="gmail.send" onApprove={noop} onDeny={noop} />
-      <ApprovalCard risk="danger" title="Drop a database" tool="postgres.drop" onApprove={noop} onDeny={noop}>
+      <ApprovalCard
+        risk="caution"
+        title="Send an email"
+        tool="gmail.send"
+        onApprove={noop}
+        onDeny={noop}
+      />
+      <ApprovalCard
+        risk="danger"
+        title="Drop a database"
+        tool="postgres.drop"
+        onApprove={noop}
+        onDeny={noop}
+      >
         <ApprovalCommand command="DROP DATABASE app_production;" />
       </ApprovalCard>
       <ApprovalCard title="Approve the plan" onApprove={noop} onDeny={noop}>

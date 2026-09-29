@@ -19,7 +19,9 @@ const PROSE = (
         it.
       </li>
     </ul>
-    <blockquote>Relative import paths need explicit file extensions in ECMAScript imports.</blockquote>
+    <blockquote>
+      Relative import paths need explicit file extensions in ECMAScript imports.
+    </blockquote>
     <p>
       See the <a href="https://nodejs.org/api/esm.html">Node ESM docs</a> for the full resolution
       algorithm.
@@ -38,11 +40,7 @@ function Actions() {
       <ResponseAction label="Good response" active={vote === "up"} onClick={() => setVote("up")}>
         <ThumbsUp size={14} />
       </ResponseAction>
-      <ResponseAction
-        label="Bad response"
-        active={vote === "down"}
-        onClick={() => setVote("down")}
-      >
+      <ResponseAction label="Bad response" active={vote === "down"} onClick={() => setVote("down")}>
         <ThumbsDown size={14} />
       </ResponseAction>
       <ResponseAction label="Retry">

@@ -177,12 +177,24 @@
   animation: var(--orb-motion, gousseOrbFade) var(--orb-dur) ease-in-out infinite;
   animation-delay: calc(var(--p, 0) * var(--orb-dur) * -1);
 }
-.gousse-orb[data-motion="fade"] { --orb-motion: gousseOrbFade; }
-.gousse-orb[data-motion="pulse"] { --orb-motion: gousseOrbPulse; }
-.gousse-orb[data-motion="comet"] { --orb-motion: gousseOrbComet; }
-.gousse-orb[data-motion="bloom"] { --orb-motion: gousseOrbBloom; }
-.gousse-orb[data-motion="focus"] { --orb-motion: gousseOrbFocus; }
-.gousse-orb[data-motion="comet"] .gousse-orb-dot { animation-timing-function: linear; }
+.gousse-orb[data-motion="fade"] {
+  --orb-motion: gousseOrbFade;
+}
+.gousse-orb[data-motion="pulse"] {
+  --orb-motion: gousseOrbPulse;
+}
+.gousse-orb[data-motion="comet"] {
+  --orb-motion: gousseOrbComet;
+}
+.gousse-orb[data-motion="bloom"] {
+  --orb-motion: gousseOrbBloom;
+}
+.gousse-orb[data-motion="focus"] {
+  --orb-motion: gousseOrbFocus;
+}
+.gousse-orb[data-motion="comet"] .gousse-orb-dot {
+  animation-timing-function: linear;
+}
 
 /* The whole stage turning — ring and morph variants layer this
    over the per-dot motion. */
@@ -194,35 +206,82 @@
 }
 
 @keyframes gousseOrbFade {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 @keyframes gousseOrbPulse {
-  0%, 100% { opacity: 0.3; scale: 0.45; }
-  50% { opacity: 1; scale: 1.25; }
+  0%,
+  100% {
+    opacity: 0.3;
+    scale: 0.45;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.25;
+  }
 }
 @keyframes gousseOrbComet {
-  0% { opacity: 1; scale: 1.15; }
-  45% { opacity: 0.35; scale: 0.8; }
-  100% { opacity: 0.15; scale: 0.7; }
+  0% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  45% {
+    opacity: 0.35;
+    scale: 0.8;
+  }
+  100% {
+    opacity: 0.15;
+    scale: 0.7;
+  }
 }
 @keyframes gousseOrbBloom {
-  0% { opacity: 0; scale: 0.2; }
-  30% { opacity: 1; }
-  100% { opacity: 0; scale: 2.4; }
+  0% {
+    opacity: 0;
+    scale: 0.2;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 2.4;
+  }
 }
 /* Depth by blur: a dot in focus is sharp and full, one out of it
    is soft and faint — the "lens" family. */
 @keyframes gousseOrbFocus {
-  0%, 100% { opacity: 0.3; scale: 0.8; filter: blur(1.2px); }
-  50% { opacity: 1; scale: 1.2; filter: blur(0); }
+  0%,
+  100% {
+    opacity: 0.3;
+    scale: 0.8;
+    filter: blur(1.2px);
+  }
+  50% {
+    opacity: 1;
+    scale: 1.2;
+    filter: blur(0);
+  }
 }
 @keyframes gousseOrbSpin {
-  to { rotate: 360deg; }
+  to {
+    rotate: 360deg;
+  }
 }
 @keyframes gousseOrbSpinBreathe {
-  0%, 100% { rotate: 0deg; scale: 1; }
-  50% { rotate: 180deg; scale: 0.7; }
+  0%,
+  100% {
+    rotate: 0deg;
+    scale: 1;
+  }
+  50% {
+    rotate: 180deg;
+    scale: 0.7;
+  }
 }
 
 /* ------------------------------------------------------------
@@ -235,12 +294,7 @@
   inset-inline: 0;
   top: 0;
   height: 40%;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgb(var(--gousse-panel) / 0.55),
-    transparent
-  );
+  background: linear-gradient(180deg, transparent, rgb(var(--gousse-panel) / 0.55), transparent);
   animation: gousseScan 2.2s ease-in-out infinite;
 }
 @keyframes gousseScan {

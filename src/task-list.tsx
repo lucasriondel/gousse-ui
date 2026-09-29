@@ -74,7 +74,10 @@ export function TaskList({
                   <ChevronRight
                     size={14}
                     aria-hidden
-                    className={cn("text-gousse-muted transition-transform duration-200", open && "rotate-90")}
+                    className={cn(
+                      "text-gousse-muted transition-transform duration-200",
+                      open && "rotate-90",
+                    )}
                   />
                   {title}
                 </button>
@@ -121,10 +124,7 @@ function TaskMarker({ status }: { status: TaskStatus }) {
     case "running":
       return (
         <span
-          className={cn(
-            base,
-            "animate-spin border-2 border-gousse-line border-t-gousse-accent",
-          )}
+          className={cn(base, "animate-spin border-2 border-gousse-line border-t-gousse-accent")}
         />
       );
     case "done":
@@ -140,9 +140,7 @@ function TaskMarker({ status }: { status: TaskStatus }) {
         </span>
       );
     case "skipped":
-      return (
-        <span className={cn(base, "border border-dashed border-gousse-muted/60")} />
-      );
+      return <span className={cn(base, "border border-dashed border-gousse-muted/60")} />;
     default:
       return <Circle size={16} strokeWidth={1.5} className="shrink-0 text-gousse-line" />;
   }

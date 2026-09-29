@@ -45,8 +45,7 @@ const glyphTone = {
 } as const;
 
 interface ApprovalCardProps
-  extends Omit<ComponentProps<"section">, "title">,
-    VariantProps<typeof header> {
+  extends Omit<ComponentProps<"section">, "title">, VariantProps<typeof header> {
   /** What the agent wants to do — "Run a shell command". */
   title: ReactNode;
   /** The tool name, shown monospaced in the header. */
@@ -103,7 +102,9 @@ export function ApprovalCard({
           {approved ? <Check size={13} strokeWidth={2.5} /> : <X size={13} strokeWidth={2.5} />}
         </span>
         <span className="min-w-0 flex-1 truncate text-gousse-ink">{title}</span>
-        <span className={cn("text-xs font-semibold", approved ? "text-gousse-low" : "text-gousse-high")}>
+        <span
+          className={cn("text-xs font-semibold", approved ? "text-gousse-low" : "text-gousse-high")}
+        >
           {approved ? "Approved" : "Denied"}
         </span>
       </section>
@@ -118,7 +119,11 @@ export function ApprovalCard({
       data-risk={tone}
       className={cn(
         "animate-slide-up overflow-hidden rounded-2xl border bg-gousse-panel text-left shadow-gousse-md",
-        tone === "danger" ? "border-gousse-high/30" : tone === "caution" ? "border-gousse-accent/30" : "border-gousse-line",
+        tone === "danger"
+          ? "border-gousse-high/30"
+          : tone === "caution"
+            ? "border-gousse-accent/30"
+            : "border-gousse-line",
         className,
       )}
       {...props}

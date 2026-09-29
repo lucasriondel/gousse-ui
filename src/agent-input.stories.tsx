@@ -170,7 +170,12 @@ export const InteractiveDemo: Story = { render: () => <Interactive /> };
 export const AllStates: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
-      <AgentInput models={MODELS} attachMenu={ATTACH_MENU} onEnhance={noop} onToggleRecording={noop} />
+      <AgentInput
+        models={MODELS}
+        attachMenu={ATTACH_MENU}
+        onEnhance={noop}
+        onToggleRecording={noop}
+      />
       <AgentInput defaultValue={FILLED} models={MODELS} onEnhance={noop} />
       <AgentInput value={FILLED} enhancing models={MODELS} onEnhance={noop} />
       <AgentInput value={ENHANCED} enhanced onUndoEnhance={noop} models={MODELS} onEnhance={noop} />

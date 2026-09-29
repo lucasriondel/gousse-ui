@@ -74,7 +74,11 @@ const VARIANTS = {
   },
   "morph-bloom": {
     motion: "bloom",
-    dots: [{ x: 50, y: 50, p: 0, r: 2 }, { x: 50, y: 50, p: 0.33, r: 2 }, { x: 50, y: 50, p: 0.66, r: 2 }],
+    dots: [
+      { x: 50, y: 50, p: 0, r: 2 },
+      { x: 50, y: 50, p: 0.33, r: 2 },
+      { x: 50, y: 50, p: 0.66, r: 2 },
+    ],
     duration: 2.4,
   },
 } satisfies Record<string, Spec>;

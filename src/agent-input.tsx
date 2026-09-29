@@ -138,13 +138,16 @@ export function AgentInput({
     onValueChange?.(next);
   };
 
-  // Grow with the content up to `maxRows`, then scroll.
+  // Grow with the content up to `maxRows`, then scroll. `value` and
+  // `recording` aren't read here, but each change resizes the box, so each
+  // must re-measure it.
   useLayoutEffect(() => {
     const el = box.current;
     if (!el) return;
     el.style.height = "auto";
     const line = parseFloat(getComputedStyle(el).lineHeight) || 20;
     el.style.height = `${Math.min(el.scrollHeight, line * maxRows)}px`;
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- re-measure on content change
   }, [value, maxRows, recording]);
 
   const submit = (e?: FormEvent) => {
@@ -165,7 +168,17 @@ export function AgentInput({
     <form
       onSubmit={submit}
       data-state={
-        running ? "running" : recording ? "recording" : enhancing ? "enhancing" : enhanced ? "enhanced" : value ? "filled" : "idle"
+        running
+          ? "running"
+          : recording
+            ? "recording"
+            : enhancing
+              ? "enhancing"
+              : enhanced
+                ? "enhanced"
+                : value
+                  ? "filled"
+                  : "idle"
       }
       className={cn(
         "flex w-full flex-col gap-1 rounded-3xl border border-gousse-line bg-gousse-panel p-2 shadow-gousse-md transition-[border-color,box-shadow] focus-within:border-gousse-ink/40 focus-within:shadow-gousse-lg",
@@ -201,11 +214,14 @@ export function AgentInput({
       ) : null}
 
       {recording ? (
-        <div
-          role="status"
-          className="flex min-h-11 items-center gap-3 px-3 text-gousse-accent"
-        >
-          <AudioWaves variant="mirrored" count={24} height={24} levels={levels} className="flex-1" />
+        <div role="status" className="flex min-h-11 items-center gap-3 px-3 text-gousse-accent">
+          <AudioWaves
+            variant="mirrored"
+            count={24}
+            height={24}
+            levels={levels}
+            className="flex-1"
+          />
           <span className="text-xs font-medium text-gousse-muted">Listening…</span>
         </div>
       ) : (
@@ -298,7 +314,11 @@ export function AgentInput({
             aria-pressed={recording}
             onClick={onToggleRecording}
             disabled={locked || running}
-            className={cn(ICON_BUTTON, recording && "bg-gousse-accent/15 text-gousse-accent hover:bg-gousse-accent/25 hover:text-gousse-accent")}
+            className={cn(
+              ICON_BUTTON,
+              recording &&
+                "bg-gousse-accent/15 text-gousse-accent hover:bg-gousse-accent/25 hover:text-gousse-accent",
+            )}
           >
             <Mic size={16} />
           </button>
@@ -310,7 +330,11 @@ export function AgentInput({
           disabled={running ? !onStop : !canSend}
           className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-gousse-ink text-gousse-bg transition-[transform,colors,opacity] hover:bg-gousse-ink/90 active:scale-[0.92] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gousse-ink/30 focus-visible:ring-offset-2 focus-visible:ring-offset-gousse-panel disabled:bg-gousse-line disabled:text-gousse-muted"
         >
-          {running ? <Square size={12} fill="currentColor" /> : <ArrowUp size={16} strokeWidth={2.5} />}
+          {running ? (
+            <Square size={12} fill="currentColor" />
+          ) : (
+            <ArrowUp size={16} strokeWidth={2.5} />
+          )}
         </button>
       </div>
     </form>

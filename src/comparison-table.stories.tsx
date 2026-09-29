@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { ComparisonTable, type ComparisonFeature, type ComparisonOption } from "./comparison-table.js";
+import {
+  ComparisonTable,
+  type ComparisonFeature,
+  type ComparisonOption,
+} from "./comparison-table.js";
 
 const OPTIONS: ComparisonOption[] = [
   { key: "personal", label: "Personal", sub: "$0 / mo" },
@@ -40,8 +44,18 @@ export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <ComparisonTable options={OPTIONS} features={FEATURES} caption="Default" />
-      <ComparisonTable options={OPTIONS} features={FEATURES} highlight="team" caption="Highlighted" />
-      <ComparisonTable options={OPTIONS} features={MIXED} highlight="enterprise" caption="Mixed values" />
+      <ComparisonTable
+        options={OPTIONS}
+        features={FEATURES}
+        highlight="team"
+        caption="Highlighted"
+      />
+      <ComparisonTable
+        options={OPTIONS}
+        features={MIXED}
+        highlight="enterprise"
+        caption="Mixed values"
+      />
     </div>
   ),
 };

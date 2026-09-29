@@ -24,9 +24,9 @@ function ProgressDemo() {
   const done = progress >= 100;
   useEffect(() => {
     if (done) return;
-    const id = setTimeout(() => setProgress((p) => Math.min(100, p + 3 + Math.random() * 6)), 200);
-    return () => clearTimeout(id);
-  }, [progress, done]);
+    const id = setInterval(() => setProgress((p) => Math.min(100, p + 3 + Math.random() * 6)), 200);
+    return () => clearInterval(id);
+  }, [done]);
   return (
     <div className="flex flex-col items-start gap-3">
       <ImageGeneration
@@ -70,7 +70,12 @@ export const AllStates: Story = {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <ImageGeneration status="generating" />
         <ImageGeneration status="generating" progress={62} />
-        <ImageGeneration status="done" src={SRC} alt="A lighthouse" caption="Watercolor lighthouse" />
+        <ImageGeneration
+          status="done"
+          src={SRC}
+          alt="A lighthouse"
+          caption="Watercolor lighthouse"
+        />
         <ImageGeneration status="error" />
       </div>
       <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-3">

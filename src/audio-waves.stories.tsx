@@ -36,8 +36,16 @@ function LiveDemo({ count = 24 }: { count?: number }) {
   }, [count]);
   return (
     <div className="flex max-w-xl flex-col gap-2">
-      <AudioWaves variant="mirrored" count={count} height={40} levels={levels} className="text-gousse-accent" />
-      <span className="text-xs text-gousse-muted">Levels from a simulated mic (random, 90ms frames)</span>
+      <AudioWaves
+        variant="mirrored"
+        count={count}
+        height={40}
+        levels={levels}
+        className="text-gousse-accent"
+      />
+      <span className="text-xs text-gousse-muted">
+        Levels from a simulated mic (random, 90ms frames)
+      </span>
     </div>
   );
 }

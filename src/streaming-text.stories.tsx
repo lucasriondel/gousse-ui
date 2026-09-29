@@ -10,7 +10,13 @@ const meta = {
   component: StreamingText,
   tags: ["autodocs"],
   args: { text: ANSWER },
-  decorators: [(Story) => <div className="max-w-xl"><Story /></div>],
+  decorators: [
+    (Story) => (
+      <div className="max-w-xl">
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof StreamingText>;
 
 export default meta;

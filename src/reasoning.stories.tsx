@@ -15,8 +15,14 @@ type Story = StoryObj<typeof meta>;
 const STEPS = [
   { title: "Reading the request", detail: "The user wants the flaky login test fixed." },
   { title: "Locating the test", detail: "Found `auth/login.test.ts`, 3 cases using fake timers." },
-  { title: "Checking the timer setup", detail: "`vi.useFakeTimers()` runs after the first render." },
-  { title: "Forming a hypothesis", detail: "The debounce fires on the real clock before timers are faked." },
+  {
+    title: "Checking the timer setup",
+    detail: "`vi.useFakeTimers()` runs after the first render.",
+  },
+  {
+    title: "Forming a hypothesis",
+    detail: "The debounce fires on the real clock before timers are faked.",
+  },
   { title: "Planning the fix", detail: "Move the fake-timer setup into `beforeEach`." },
 ];
 
@@ -44,9 +50,9 @@ function LiveReasoning() {
 
   useEffect(() => {
     if (done) return;
-    const id = setTimeout(() => setCount((c) => c + 1), 800);
-    return () => clearTimeout(id);
-  }, [count, done]);
+    const id = setInterval(() => setCount((c) => c + 1), 800);
+    return () => clearInterval(id);
+  }, [done]);
 
   return (
     <div className="flex max-w-xl flex-col items-start gap-4">
@@ -99,8 +105,8 @@ export const PlainTextTrace: Story = {
   render: () => (
     <div className="max-w-xl">
       <Reasoning status="done" duration={3000} defaultOpen>
-        The user asked for a summary, so I'll keep it to three bullets and lead with the
-        decision rather than the background.
+        The user asked for a summary, so I'll keep it to three bullets and lead with the decision
+        rather than the background.
       </Reasoning>
     </div>
   ),

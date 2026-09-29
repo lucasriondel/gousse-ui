@@ -48,7 +48,6 @@ export function useElapsed(startedAt: number | undefined, running: boolean): num
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (!running || startedAt === undefined) return;
-    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, [running, startedAt]);
@@ -96,9 +95,7 @@ export function ThinkingState({
         <>
           <span className="gousse-shimmer">{label}…</span>
           {showClock ? (
-            <span className="tabular-nums text-xs text-gousse-muted">
-              {formatElapsed(elapsed)}
-            </span>
+            <span className="tabular-nums text-xs text-gousse-muted">{formatElapsed(elapsed)}</span>
           ) : null}
         </>
       ) : (

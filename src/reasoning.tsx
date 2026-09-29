@@ -74,7 +74,7 @@ export function Reasoning({
           duration={duration}
           label={label}
           doneLabel={doneLabel}
-          role={undefined}
+          role="none"
         />
         <ChevronRight
           size={14}
@@ -108,10 +108,7 @@ export function ReasoningStep({
   return (
     <div className={cn("py-1", className)} {...props}>
       <div
-        className={cn(
-          "font-medium",
-          status === "thinking" ? "gousse-shimmer" : "text-gousse-ink",
-        )}
+        className={cn("font-medium", status === "thinking" ? "gousse-shimmer" : "text-gousse-ink")}
       >
         {title}
       </div>

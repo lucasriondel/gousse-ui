@@ -1,4 +1,10 @@
-import { useRef, useState, type ComponentProps, type KeyboardEvent, type PointerEvent } from "react";
+import {
+  useRef,
+  useState,
+  type ComponentProps,
+  type KeyboardEvent,
+  type PointerEvent,
+} from "react";
 import { cn } from "./utils.js";
 
 /**
@@ -20,8 +26,10 @@ import { cn } from "./utils.js";
 
 export const DEFAULT_EFFORT_LEVELS = ["Low", "Medium", "High", "Extra high"] as const;
 
-interface ReasoningEffortProps
-  extends Omit<ComponentProps<"div">, "defaultValue" | "onChange" | "children"> {
+interface ReasoningEffortProps extends Omit<
+  ComponentProps<"div">,
+  "defaultValue" | "onChange" | "children"
+> {
   levels?: readonly string[];
   value?: number;
   defaultValue?: number;
@@ -75,7 +83,12 @@ export function ReasoningEffort({
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    const step: Record<string, number> = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 };
+    const step: Record<string, number> = {
+      ArrowRight: 1,
+      ArrowUp: 1,
+      ArrowLeft: -1,
+      ArrowDown: -1,
+    };
     if (e.key in step) commit(value + step[e.key]!);
     else if (e.key === "Home") commit(0);
     else if (e.key === "End") commit(max);
@@ -86,7 +99,10 @@ export function ReasoningEffort({
   const levelName = levels[value] ?? "";
 
   return (
-    <div className={cn("group/effort relative inline-flex w-56 flex-col pt-7", className)} {...props}>
+    <div
+      className={cn("group/effort relative inline-flex w-56 flex-col pt-7", className)}
+      {...props}
+    >
       <span
         aria-hidden
         className={cn(

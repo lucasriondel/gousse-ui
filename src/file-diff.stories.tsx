@@ -26,7 +26,13 @@ const meta = {
   component: FileDiff,
   tags: ["autodocs"],
   args: { file: "src/auth/login.test.ts", rows },
-  decorators: [(Story) => <div className="max-w-2xl"><Story /></div>],
+  decorators: [
+    (Story) => (
+      <div className="max-w-2xl">
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof FileDiff>;
 
 export default meta;
@@ -68,7 +74,13 @@ export const AllStates: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <FileDiff file="src/auth/login.test.ts" rows={rows} />
-      <FileDiff file="src/auth/login.test.ts" rows={rows} status="pending" onAccept={() => {}} onReject={() => {}} />
+      <FileDiff
+        file="src/auth/login.test.ts"
+        rows={rows}
+        status="pending"
+        onAccept={() => {}}
+        onReject={() => {}}
+      />
       <FileDiff file="src/auth/login.test.ts" rows={rows} status="accepted" defaultOpen={false} />
       <FileDiff file="src/auth/login.test.ts" rows={rows} status="rejected" defaultOpen={false} />
     </div>
