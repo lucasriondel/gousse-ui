@@ -126,6 +126,18 @@ export {
   useAppShell,
 } from "./app-shell.js";
 export {
+  SettingsLayout,
+  SettingsHeader,
+  SettingsHeading,
+  SettingsBack,
+  SettingsTitle,
+  SettingsBody,
+  SettingsNav,
+  SettingsNavItem,
+  SettingsContent,
+  type SettingsLinkRenderProps,
+} from "./settings-layout.js";
+export {
   Sidebar,
   SidebarShell,
   SidebarHeader,
